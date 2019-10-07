@@ -6,7 +6,7 @@ const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
 // const storage = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
-
+let storage;
 let data = {
     counting: true,
     channelId: '',
@@ -22,10 +22,10 @@ let data = {
 
 try {
     if (fs.existsSync(path)) {
-        const storage = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+        storage = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
     }
 } catch (err) {
-    const storage = data;
+    storage = data;
 }
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -48,7 +48,7 @@ client.on('message', message => {
         if (parseInt(commandName, 10) == storage.lastNumber + 1) {
             return;
         } else {
-            message.channel.send('Someone fucked up!');
+            message.channel.send('Someone messed up!');
             return;
         }
     }

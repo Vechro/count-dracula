@@ -1,7 +1,7 @@
-const fs = require('fs');
-const jsonfile = require('jsonfile');
-const Discord = require('discord.js');
-const { prefix, token } = require('./config.json');
+const fs = require("fs");
+const jsonfile = require("jsonfile");
+const Discord = require("discord.js");
+const { prefix, token } = require("./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -10,11 +10,11 @@ client.commands = new Discord.Collection();
 let storage;
 let data = {
     counting: true,
-    channelId: '',
+    channelId: "",
     lastNumber: 0,
     users: [
         {
-            userId: '',
+            userId: "",
             banishments: 0,
             unbanDate: 0,
         },
@@ -23,24 +23,24 @@ let data = {
 
 try {
     if (fs.existsSync(path)) {
-        storage = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+        storage = JSON.parse(fs.readFileSync("./data/data.json", "utf8"));
     }
 } catch (err) {
     storage = data;
 }
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
 
-client.once('ready', () => {
-    console.log('Ready!');
+client.once("ready", () => {
+    console.log("Ready!");
 });
 
-client.on('message', message => {
+client.on("message", message => {
 
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
@@ -49,7 +49,7 @@ client.on('message', message => {
         if (parseInt(commandName, 10) == storage.lastNumber + 1) {
             return;
         } else {
-            message.channel.send('Someone messed up!');
+            message.channel.send("Someone messed up!");
             return;
         }
     }
@@ -61,8 +61,8 @@ client.on('message', message => {
 
     if (!command) return;
 
-    if (command.guildOnly && message.channel.type !== 'text') {
-        return message.reply('I can\'t execute that command inside DMs!');
+    if (command.guildOnly && message.channel.type !== "text") {
+        return message.reply("I can't execute that command inside DMs!");
     }
 
     if (command.args && !args.length) {
@@ -79,7 +79,7 @@ client.on('message', message => {
         command.execute(message, args);
     } catch (error) {
         console.error(error);
-        message.reply('there was an error trying to execute that command!');
+        message.reply("there was an error trying to execute that command!");
     }
 });
 

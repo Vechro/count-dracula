@@ -1,4 +1,5 @@
 const fs = require('fs');
+const jsonfile = require('jsonfile');
 
 module.exports = {
     name: 'usechannel',
@@ -6,12 +7,18 @@ module.exports = {
     aliases: ['setchannel'],
     execute(message, args) {
         // ideally would export this data to json
-        // channelName = args[0];
-        const channelName = message.mentions.channels.first();
-        const countStart = args[1];
+        // channel = args[0];
+        const channel = message.mentions.channels.first();
+        // const countStart = args[1];
+        let data = {
+            counting: true,
+            channelId: channel.id,
+        }
+        jsonfile.writeFileSync('./data/data.json', data);
 
-        fs.writeFileSync('./data/data.json', 'utf8');
-
-        channelName.send("Channel set for counting");
+        channel.send("Channel set for counting");
+        
+        // TODO: Don't hardcode this
+        channel.send("1");
     },
 };

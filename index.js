@@ -8,7 +8,9 @@ client.commands = new Discord.Collection();
 
 // const storage = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
 let storage;
-let data = {
+
+// Example structure of the JSON
+const data = {
     counting: true,
     channelId: "",
     lastNumber: 0,
@@ -18,17 +20,17 @@ let data = {
             banishments: 0,
             unbanDate: 0,
         },
-    ]
+    ],
 };
 
-try {
-    if (fs.existsSync(path)) {
-        storage = JSON.parse(fs.readFileSync("./data/data.json", "utf8"));
-    }
-} catch (err) {
-    storage = data;
+if (fs.existsSync("./data/data.json")) {
+    storage = jsonfile.readFileSync("./data/data.json", function(err) {
+        if (err) {
+            console.log(err);
+            storage = data;
+        }
+    });
 }
-
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
@@ -79,7 +81,7 @@ client.on("message", message => {
         command.execute(message, args);
     } catch (error) {
         console.error(error);
-        message.reply("there was an error trying to execute that command!");
+        message.reply("There was an error trying to execute that command!");
     }
 });
 

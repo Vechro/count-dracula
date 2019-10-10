@@ -27,10 +27,17 @@ if (fs.existsSync("./data/data.json")) {
     storage = jsonfile.readFileSync("./data/data.json", function(err) {
         if (err) {
             console.log(err);
-            storage = data;
+        }
+    });
+} else {
+    storage = data;
+    jsonfile.writeFileSync("./data/data.json", storage, function(err) {
+        if(err) {
+            console.log(err);
         }
     });
 }
+
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
@@ -46,14 +53,18 @@ client.on("message", message => {
 
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
-
-    if (message.channel.id == storage.channelId) {
-        if (parseInt(commandName, 10) == storage.lastNumber + 1) {
-            return;
-        } else {
-            message.channel.send("Someone messed up!");
-            return;
+    try {
+        if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
+            if (parseInt(commandName, 10) == storage.lastNumber + 1) {
+                return;
+            } else {
+                // Specify by mentioning the user
+                message.channel.send("Someone messed up!");
+                return;
+            }
         }
+    } catch (err) {
+        message.channel.send(`Set a channel for counting by using ${prefix}usechannel`);
     }
 
     if (!message.content.startsWith(prefix) || message.author.bot) return;

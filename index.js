@@ -57,6 +57,7 @@ client.on("message", message => {
     console.log(countAttempt);
     try {
         if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
+            // parseInt is really fuckin lax, TODO: add parseInt into a function
             if (parseInt(countAttempt, 10) == storage.lastNumber + 1) {
                 storage.lastNumber++;
                 // Should make this a function

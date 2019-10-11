@@ -1,4 +1,3 @@
-// const fs = require('fs');
 const jsonfile = require("jsonfile");
 
 module.exports = {
@@ -6,8 +5,7 @@ module.exports = {
     description: "Specify a channel to be used for counting.",
     aliases: ["setchannel"],
     execute(message, args) {
-        // ideally would export this data to json
-        // channel = args[0];
+
         const channel = message.mentions.channels.first();
         let countStart = args[1] || 0;
         const data = {

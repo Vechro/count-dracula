@@ -9,13 +9,7 @@ module.exports = {
         // ideally would export this data to json
         // channel = args[0];
         const channel = message.mentions.channels.first();
-        let countStart = 0;
-        try {
-            countStart = args[1];
-        } catch(err) {
-            console.log(err);
-            countStart = 0;
-        }
+        let countStart = args[1] || 0;
         const data = {
             counting: true,
             channelId: channel.id,
@@ -23,7 +17,7 @@ module.exports = {
         };
 
         jsonfile.writeFileSync("./data/data.json", data);
-
+        console.log(countStart);
         channel.send("Channel set for counting");
 
         channel.send(countStart);

@@ -48,18 +48,26 @@ for (const file of commandFiles) {
 client.once("ready", () => {
     console.log("Ready!");
 });
-
+// Make commands admin-only, resetting the count on misuse
 client.on("message", message => {
 
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
+    const countAttempt = message.content.split(/ +/)[0];
+    console.log(countAttempt);
     try {
         if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-            if (parseInt(commandName, 10) == storage.lastNumber + 1) {
+            if (parseInt(countAttempt, 10) == storage.lastNumber + 1) {
+                storage.lastNumber++;
+                // Should make this a function
+                jsonfile.writeFileSync("./data/data.json", storage)
                 return;
             } else {
-                // Specify by mentioning the user
+                // TODO: Specify by mentioning the user
                 message.channel.send("Someone messed up!");
+                storage.lastNumber = Math.floor(storage.lastNumber * 0.9);
+                message.channel.send(storage.lastNumber);
+                jsonfile.writeFileSync("./data/data.json", storage)
                 return;
             }
         }

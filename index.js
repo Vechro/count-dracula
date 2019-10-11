@@ -1,7 +1,7 @@
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
-const { prefix, token } = require("./config.json");
+const { prefix, token, path } = require("./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -23,15 +23,15 @@ const data = {
     ],
 };
 
-if (fs.existsSync("./data/data.json")) {
-    storage = jsonfile.readFileSync("./data/data.json", function(err) {
+if (fs.existsSync(path)) {
+    storage = jsonfile.readFileSync(path, function(err) {
         if (err) {
             console.log(err);
         }
     });
 } else {
     storage = data;
-    jsonfile.writeFileSync("./data/data.json", storage, function(err) {
+    jsonfile.writeFileSync(path, storage, function(err) {
         if(err) {
             console.log(err);
         }
@@ -61,14 +61,14 @@ client.on("message", message => {
             if (parseInt(countAttempt, 10) == storage.lastNumber + 1) {
                 storage.lastNumber++;
                 // Should make this a function
-                jsonfile.writeFileSync("./data/data.json", storage)
+                jsonfile.writeFileSync(path, storage)
                 return;
             } else {
                 // TODO: Specify by mentioning the user
                 message.channel.send("Someone messed up!");
                 storage.lastNumber = Math.floor(storage.lastNumber * 0.9);
                 message.channel.send(storage.lastNumber);
-                jsonfile.writeFileSync("./data/data.json", storage)
+                jsonfile.writeFileSync(path, storage)
                 return;
             }
         }
@@ -76,7 +76,7 @@ client.on("message", message => {
         message.channel.send(`Set a channel for counting by using ${prefix}usechannel`);
     }
 
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (!message.content.startsWith(prefix) || message.author.bot || !message.member.hasPermission("KICK_MEMBERS")) return;
 
     const command = client.commands.get(commandName)
         || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));

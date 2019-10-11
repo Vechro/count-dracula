@@ -1,4 +1,8 @@
+const fs = require("fs");
 const jsonfile = require("jsonfile");
+const { path } = require("../config.json");
+
+let storage;
 
 module.exports = {
     name: "usechannel",
@@ -6,8 +10,23 @@ module.exports = {
     aliases: ["setchannel"],
     execute(message, args) {
 
+        if (fs.existsSync(path)) {
+            storage = jsonfile.readFileSync(path, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+            storage = data;
+            jsonfile.writeFileSync(path, storage, function(err) {
+                if(err) {
+                    console.log(err);
+                }
+            });
+        }
+
         const channel = message.mentions.channels.first();
-        let countStart = args[1] || 0;
+        const countStart = args[1] || 0;
         const data = {
             counting: true,
             channelId: channel.id,

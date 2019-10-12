@@ -29,7 +29,7 @@ function InitializeStorage(storage) {
     storage.users = new Map(storage.users);
 
     storage.users.toJSON = function () {
-        return [...storage.users.entries()]
+        return [...storage.users.entries()];
     };
 
     return storage;

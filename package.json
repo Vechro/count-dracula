@@ -12,6 +12,7 @@
     "discord.js": "^11.5.1",
     "eslint": "^6.5.1",
     "jsonfile": "^5.0.0",
+    "moment": "^2.24.0",
     "romanjs": "git+https://git@github.com/Vechro/RomanJS.git"
   }
 }

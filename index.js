@@ -3,6 +3,7 @@ const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
 const roman = require("romanjs");
 const moment = require("moment");
+const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");
 
 const client = new Discord.Client();
@@ -15,7 +16,7 @@ const data = {
     lastNumber: 0,
     users: [],
 };
-
+// fs.mkdirSync(path);
 const storage = InitializeStorage(
     fs.existsSync(path) ? jsonfile.readFileSync(path, function (err) {
         if (err) {
@@ -80,7 +81,7 @@ client.on("message", message => {
                     */
                     const user = storage.users.get(message.member);
                     user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + user.banishments, "days"),
+                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + fibonacci.iterate(user.banishments).number, "days"),
                     storage.users.set(user);
 
                 } else {
@@ -94,6 +95,8 @@ client.on("message", message => {
                 message.channel.send(`${message.member} messed up.`);
                 storage.lastNumber = Math.floor(storage.lastNumber * 0.9);
                 message.channel.send(storage.lastNumber);
+
+                // Consider going asynchronous
                 jsonfile.writeFileSync(path, storage);
                 return;
             }

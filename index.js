@@ -7,22 +7,35 @@ const { prefix, token, path } = require("./config.json");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
-let storage;
+// let storage;
 
 // Example structure of the JSON
 const data = {
     counting: true,
     channelId: "",
     lastNumber: 0,
-    users: [
-        {
-            userId: "",
-            banishments: 0,
-            unbanDate: 0,
-        },
-    ],
+    users: [],
 };
 
+const storage = InitializeStorage(
+    fs.existsSync(path) ? jsonfile.readFileSync(path, function (err) {
+        if (err) {
+            console.log(err);
+        }
+    }) : jsonfile.writeFileSync(path, data) || data
+);
+
+
+function InitializeStorage(storage) {    
+    storage.users = new Map(storage.users);
+
+    storage.users.toJSON = function () {
+        return Object.entries(storage.users);
+    };
+
+    return storage;
+}
+/*
 if (fs.existsSync(path)) {
     storage = jsonfile.readFileSync(path, function (err) {
         if (err) {
@@ -37,11 +50,12 @@ if (fs.existsSync(path)) {
         }
     });
 }
-
+*/
 function isValidInt(string, expectedInt) {
     if (parseInt(string, 10) === expectedInt) {
         return true;
     }
+    // I'm not entirely sure what the next block does but it's supposedly for performance
     else if (string === "0" || string === "1") {
         return false;
     }
@@ -60,7 +74,7 @@ for (const file of commandFiles) {
 client.once("ready", () => {
     console.log("Ready!");
 });
-// Make commands admin-only, resetting the count on misuse
+// Make commands admin-only, (TODO:) resetting the count on misuse
 client.on("message", message => {
 
     const args = message.content.slice(prefix.length).split(/ +/);
@@ -73,8 +87,16 @@ client.on("message", message => {
                 jsonfile.writeFileSync(path, storage);
                 return;
             } else {
-                // TODO: Specify by mentioning the user
-                message.channel.send("Someone messed up!");
+                if (storage.users.has(message.member)) {
+                    const banishments = storage.users[message.member].get("banishments");
+                    storage.users[message.member].set("banishments", banishments + 1);
+
+                    // storage.users[message.member].set("unbanDate", )
+
+                } else {
+                    storage.users[message.member].set("banishments", 1);
+                }
+                message.channel.send(`${message.member} messed up.`);
                 storage.lastNumber = Math.floor(storage.lastNumber * 0.9);
                 message.channel.send(storage.lastNumber);
                 jsonfile.writeFileSync(path, storage);

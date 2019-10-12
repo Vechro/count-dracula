@@ -7,7 +7,7 @@ module.exports = {
     aliases: ["startat"],
     execute(message, args) {
 
-        const storage = jsonfile.readFileSync(path, function(err) {
+        const storage = jsonfile.readFileSync(path, function (err) {
             if (err) {
                 console.log(err);
             }

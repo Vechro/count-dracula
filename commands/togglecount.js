@@ -7,7 +7,7 @@ module.exports = {
     description: "Start or stop counting.",
     execute(message) {
 
-        const storage = jsonfile.readFileSync(path, function(err) {
+        const storage = jsonfile.readFileSync(path, function (err) {
             if (err) {
                 console.log(err);
             }

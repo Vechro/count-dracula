@@ -1,12 +1,12 @@
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
+const roman = require("romanjs");
 const { prefix, token, path } = require("./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
-// const storage = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
 let storage;
 
 // Example structure of the JSON
@@ -24,18 +24,30 @@ const data = {
 };
 
 if (fs.existsSync(path)) {
-    storage = jsonfile.readFileSync(path, function(err) {
+    storage = jsonfile.readFileSync(path, function (err) {
         if (err) {
             console.log(err);
         }
     });
 } else {
     storage = data;
-    jsonfile.writeFileSync(path, storage, function(err) {
-        if(err) {
+    jsonfile.writeFileSync(path, storage, function (err) {
+        if (err) {
             console.log(err);
         }
     });
+}
+
+function isValidInt(string, expectedInt) {
+    if (parseInt(string, 10) === expectedInt) {
+        return true;
+    }
+    else if (string === "0" || string === "1") {
+        return false;
+    }
+    else {
+        return parseInt(string, 2) === expectedInt || parseInt(string, 16) === expectedInt || roman.parseRoman(string) === expectedInt;
+    }
 }
 
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
@@ -54,21 +66,18 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    console.log(countAttempt);
     try {
         if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-            // parseInt is really fuckin lax, TODO: add parseInt into a function
-            if (parseInt(countAttempt, 10) == storage.lastNumber + 1) {
+            if (isValidInt(countAttempt, storage.lastNumber + 1)) {
                 storage.lastNumber++;
-                // Should make this a function
-                jsonfile.writeFileSync(path, storage)
+                jsonfile.writeFileSync(path, storage);
                 return;
             } else {
                 // TODO: Specify by mentioning the user
                 message.channel.send("Someone messed up!");
                 storage.lastNumber = Math.floor(storage.lastNumber * 0.9);
                 message.channel.send(storage.lastNumber);
-                jsonfile.writeFileSync(path, storage)
+                jsonfile.writeFileSync(path, storage);
                 return;
             }
         }

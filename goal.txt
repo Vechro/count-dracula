@@ -9,4 +9,4 @@
 Messing up will temporarily remove your right to count (by assigning you with a role that removes your write access from #counting)
 
 **SUGGESTIONS**
-Add support for formats other than base 10
+Add support for emoji numbers

@@ -93,7 +93,7 @@ client.on("message", message => {
                     });
                 }
                 message.channel.send(`${message.member} messed up.`);
-                storage.lastNumber = Math.floor(storage.lastNumber * 0.9);
+                storage.lastNumber = Math.floor(storage.lastNumber * 0.8);
                 message.channel.send(storage.lastNumber);
 
                 // Consider going asynchronous

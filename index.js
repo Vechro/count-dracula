@@ -57,6 +57,17 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+//
+function createRole(guild, roleName = "Can't Count", channel) {
+    const role = guild.roles.find(role => role.name === roleName);
+    if (!role) {
+        guild.createRole({ name: roleName, mentionable: false }, "Created to restrict access to the counting designated channel.");
+        return "Role created successfully";
+    } else {
+        return "Role by that name already exists";
+    }
+}
+
 function addRole(userId, role) {
 
 }
@@ -67,7 +78,7 @@ function removeRole(userId, role) {
 
 // This function polls the userlist on an hourly basis to find anyone who should be unbanned
 function pollUsers() {
-    currentTime = moment();
+    const currentTime = moment();
 
     storage.users.forEach(function (value, key, map) {
         if (value.unbanDate < currentTime && value.unbanDate !== 0) {

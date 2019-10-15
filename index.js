@@ -11,12 +11,13 @@ client.commands = new Discord.Collection();
 
 // Original structure of the JSON
 const data = {
-    counting: true,
-    channelId: "",
-    lastNumber: 0,
-    users: [],
+    counting: true, // Bool
+    channelId: 0, // Snowflake/Int
+    designatedRoleId: 0, // Snowflake/Int
+    lastNumber: 0, // Int
+    users: [], // Map
 };
-// fs.mkdirSync(path);
+// TODO: use fs.mkdirSync(path);
 const storage = InitializeStorage(
     fs.existsSync(path) ? jsonfile.readFileSync(path, function (err) {
         if (err) {
@@ -26,7 +27,7 @@ const storage = InitializeStorage(
 );
 
 
-function InitializeStorage(storage) {    
+function InitializeStorage(storage) {
     storage.users = new Map(storage.users);
 
     storage.users.toJSON = function () {
@@ -56,7 +57,34 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+function addRole(userId, role) {
+
+}
+
+function removeRole(userId, role) {
+
+}
+
+// This function polls the userlist on an hourly basis to find anyone who should be unbanned
+function pollUsers() {
+    currentTime = moment();
+
+    storage.users.forEach(function (value, key, map) {
+        if (value.unbanDate < currentTime && value.unbanDate !== 0) {
+            // Add code for removing Can't Count role
+            value.unbanDate = 0;
+
+        }
+    })
+}
+
+// Add role creation for "Can't count" and unless it already exists, and add permissions to restrict the role from sending messages in channelId
+
+setInterval(pollUsers, 60 * 60 * 1000);
+
 client.once("ready", () => {
+    // Poll asynchronously on launch
+    setTimeout(pollUsers(), 0);
     console.log("Ready!");
 });
 // (TODO:) resetting the count on command misuse
@@ -74,26 +102,19 @@ client.on("message", message => {
                 return;
             } else {
                 if (storage.users.has(message.member)) {
-                    console.log("test1");
-                    /*
-                    const banishments = storage.users[message.member].get("banishments");
-                    storage.users[message.member].set("banishments", banishments + 1);
-                    */
                     const user = storage.users.get(message.member);
                     user.banishments += 1;
                     user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + fibonacci.iterate(user.banishments).number, "days"),
-                    storage.users.set(user);
+                        storage.users.set(user);
 
                 } else {
-                    console.log("test2");
-                    // storage.users[message.member].set("banishments", 1);
                     storage.users.set(message.member, {
                         banishments: 1,
                         unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
                     });
                 }
                 message.channel.send(`${message.member} messed up.`);
-                storage.lastNumber = Math.floor(storage.lastNumber * 0.8);
+                storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
                 message.channel.send(storage.lastNumber);
 
                 // Consider going asynchronous

@@ -57,11 +57,13 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-//
-function createRole(guild, roleName = "Can't Count", channel) {
-    const role = guild.roles.find(role => role.name === roleName);
-    if (!role) {
-        guild.createRole({ name: roleName, mentionable: false }, "Created to restrict access to the counting designated channel.");
+function setupRole(guild, guildChannel, roleName = "Can't Count") {
+    const roleQuery = guild.roles.find(role => role.name === roleName);
+    if (!roleQuery) {
+        const role = guild.createRole({ name: roleName, mentionable: false }, "Created to restrict access to the designated counting channel.");
+
+        guildChannel.overwritePermission(role, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
+        // What is error handling?
         return "Role created successfully";
     } else {
         return "Role by that name already exists";
@@ -86,7 +88,7 @@ function pollUsers() {
             value.unbanDate = 0;
 
         }
-    })
+    });
 }
 
 // Add role creation for "Can't count" and unless it already exists, and add permissions to restrict the role from sending messages in channelId
@@ -115,8 +117,9 @@ client.on("message", message => {
                 if (storage.users.has(message.member)) {
                     const user = storage.users.get(message.member);
                     user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + fibonacci.iterate(user.banishments).number, "days"),
-                        storage.users.set(user);
+                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + fibonacci.iterate(user.banishments).number, "days");
+                    // Sketchy, test this
+                    storage.users.set(user);
 
                 } else {
                     storage.users.set(message.member, {

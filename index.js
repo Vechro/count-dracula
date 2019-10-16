@@ -71,7 +71,7 @@ function setupRole(guild, guildChannel, roleName = "Can't Count") {
     }
 }
 */
-// TODO: Add DMs for indicating when they're banned or unbanned
+// TODO: Add DMs for indicating when they're banned with the ban duration
 // Move away from roles toward user-specific channel restriction
 function restrictUser(userId, channel) {
     channel.overwritePermission(userId, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
@@ -97,11 +97,11 @@ function pollUsers() {
     });
 }
 
-setInterval(pollUsers, 60 * 60 * 1000);
+// setInterval(pollUsers, 60 * 60 * 1000);
 
 client.once("ready", () => {
     // Poll asynchronously on launch
-    setTimeout(pollUsers(), 0);
+    setTimeout(pollUsers, 0);
     console.log("Ready!");
 });
 // (TODO:) resetting the count on command misuse
@@ -110,41 +110,44 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    try {
-        if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-            if (isValidInt(countAttempt, storage.lastNumber + 1)) {
-                console.log("pass " + countAttempt);
-                storage.lastNumber++;
-                jsonfile.writeFileSync(path, storage);
-                return;
+    //try {
+    if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
+        if (isValidInt(countAttempt, storage.lastNumber + 1)) {
+            console.log("pass " + countAttempt);
+            storage.lastNumber++;
+            jsonfile.writeFileSync(path, storage);
+            // return;
+        } else {
+            if (storage.users.has(message.member)) {
+                console.log("test a");
+                const user = storage.users.get(message.member);
+                user.banishments += 1;
+                user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.166 + fibonacci.iterate(user.banishments).number, "days");
+                // Sketchy, test this
+                storage.users.set(user);
+                // Ban user
+                restrictUser(user, storage.channelId);
+
             } else {
-                if (storage.users.has(message.member)) {
-                    const user = storage.users.get(message.member);
-                    user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + fibonacci.iterate(user.banishments).number, "days");
-                    // Sketchy, test this
-                    storage.users.set(user);
-                    // Ban user
-                    restrictUser(user, storage.channelId);
-
-                } else {
-                    storage.users.set(message.member, {
-                        banishments: 1,
-                        unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
-                    });
-                }
-                message.channel.send(`${message.member} messed up.`);
-                storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
-                message.channel.send(storage.lastNumber);
-
-                // Consider going asynchronous
-                jsonfile.writeFileSync(path, storage);
-                return;
+                console.log("test b");
+                storage.users.set(message.member, {
+                    banishments: 1,
+                    unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
+                });
             }
+            message.channel.send(`${message.member} messed up.`);
+            storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
+            message.channel.send(storage.lastNumber);
+
+            // Consider going asynchronous
+            console.log("test 3");
+            jsonfile.writeFileSync(path, storage);
+            return;
         }
-    } catch (err) {
-        message.channel.send(`Set a channel for counting by using ${prefix}usechannel`);
     }
+    //} catch (err) {
+        //message.channel.send(`Set a channel for counting by using ${prefix}usechannel`);
+    //}
 
     if (!message.content.startsWith(prefix) || message.author.bot || !message.member.hasPermission("KICK_MEMBERS")) return;
 

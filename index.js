@@ -56,7 +56,7 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
-
+/*
 function setupRole(guild, guildChannel, roleName = "Can't Count") {
     const roleQuery = guild.roles.find(role => role.name === roleName);
     if (!roleQuery) {
@@ -70,30 +70,32 @@ function setupRole(guild, guildChannel, roleName = "Can't Count") {
         return "Role by that name already exists";
     }
 }
-
+*/
 // TODO: Add DMs for indicating when they're banned or unbanned
-function addRole(userId, role) {
-
+// Move away from roles toward user-specific channel restriction
+function restrictUser(userId, channel) {
+    channel.overwritePermission(userId, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
+    console.log(`${userId} restricted from accessing channel`);
 }
 
-function removeRole(userId, role) {
-
+function unrestrictUser(userId, channel) {
+    channel.overwritePermission(userId, { "SEND_MESSAGES": true }, "Unrestrict access to the designated counting channel.");
+    console.log(`${userId} unrestricted from accessing channel`);
 }
 
 // This function polls the userlist on an hourly basis to find anyone who should be unbanned
 function pollUsers() {
     const currentTime = moment();
 
-    storage.users.forEach(function (value, key, map) {
-        if (value.unbanDate < currentTime && value.unbanDate !== 0) {
-            // Add code for removing Can't Count role
-            value.unbanDate = 0;
+    storage.users.forEach(function (user, key, map) {
+        if (user.unbanDate < currentTime && user.unbanDate !== 0) {
+            // Unban user
+            unrestrictUser(user, storage.channelId);
+            user.unbanDate = 0;
 
         }
     });
 }
-
-// Add role creation for "Can't Count" and unless it already exists, and add permissions to restrict the role from sending messages in channelId
 
 setInterval(pollUsers, 60 * 60 * 1000);
 
@@ -122,6 +124,8 @@ client.on("message", message => {
                     user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.1 + fibonacci.iterate(user.banishments).number, "days");
                     // Sketchy, test this
                     storage.users.set(user);
+                    // Ban user
+                    restrictUser(user, storage.channelId);
 
                 } else {
                     storage.users.set(message.member, {

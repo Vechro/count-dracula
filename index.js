@@ -66,10 +66,12 @@ function setupRole(guild, guildChannel, roleName = "Can't Count") {
         // What is error handling?
         return "Role created successfully";
     } else {
+        guildChannel.overwritePermission(roleQuery, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
         return "Role by that name already exists";
     }
 }
 
+// TODO: Add DMs for indicating when they're banned or unbanned
 function addRole(userId, role) {
 
 }
@@ -91,7 +93,7 @@ function pollUsers() {
     });
 }
 
-// Add role creation for "Can't count" and unless it already exists, and add permissions to restrict the role from sending messages in channelId
+// Add role creation for "Can't Count" and unless it already exists, and add permissions to restrict the role from sending messages in channelId
 
 setInterval(pollUsers, 60 * 60 * 1000);
 

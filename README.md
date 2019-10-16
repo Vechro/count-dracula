@@ -10,3 +10,4 @@ Messing up will temporarily remove your right to count (by assigning you with a 
 
 **Upcoming features**
 Add support for emoji numbers
+https://github.com/finnfiddle/words-to-numbers

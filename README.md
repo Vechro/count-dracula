@@ -11,3 +11,4 @@ Messing up will temporarily remove your right to count (by assigning you with a 
 **Upcoming features**
 Add support for emoji numbers
 https://github.com/finnfiddle/words-to-numbers
+Use Lodash for debouncing to lower the amount of disk writes

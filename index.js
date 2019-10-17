@@ -13,7 +13,6 @@ client.commands = new Discord.Collection();
 const data = {
     counting: true, // Bool
     channelId: 0, // Snowflake/Int
-    designatedRoleId: 0, // Snowflake/Int
     lastNumber: 0, // Int
     users: [], // Map
 };
@@ -56,23 +55,8 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
-/*
-function setupRole(guild, guildChannel, roleName = "Can't Count") {
-    const roleQuery = guild.roles.find(role => role.name === roleName);
-    if (!roleQuery) {
-        const role = guild.createRole({ name: roleName, mentionable: false }, "Created to restrict access to the designated counting channel.");
 
-        guildChannel.overwritePermission(role, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
-        // What is error handling?
-        return "Role created successfully";
-    } else {
-        guildChannel.overwritePermission(roleQuery, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
-        return "Role by that name already exists";
-    }
-}
-*/
 // TODO: Add DMs for indicating when they're banned with the ban duration
-// Move away from roles toward user-specific channel restriction
 function restrictUser(userId, channel) {
     channel.overwritePermission(userId, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
     console.log(`${userId} restricted from accessing channel`);
@@ -87,7 +71,7 @@ function unrestrictUser(userId, channel) {
 function pollUsers() {
     const currentTime = moment();
 
-    storage.users.forEach(function (user, key, map) {
+    storage.users.forEach(function (user, key) {
         if (user.unbanDate < currentTime && user.unbanDate !== 0) {
             // Unban user
             unrestrictUser(user, storage.channelId);
@@ -110,27 +94,23 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    //try {
+
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
-            console.log("pass " + countAttempt);
             storage.lastNumber++;
             jsonfile.writeFileSync(path, storage);
-            // return;
+            return;
         } else {
-            if (storage.users.has(message.member)) {
-                console.log("test a");
-                const user = storage.users.get(message.member);
+            if (storage.users.has(message.member.user.id)) {
+                const user = storage.users.get(message.member.user.id);
                 user.banishments += 1;
                 user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.166 + fibonacci.iterate(user.banishments).number, "days");
-                // Sketchy, test this
                 storage.users.set(user);
                 // Ban user
                 restrictUser(user, storage.channelId);
 
             } else {
-                console.log("test b");
-                storage.users.set(message.member, {
+                storage.users.set(message.member.user.id, {
                     banishments: 1,
                     unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
                 });
@@ -139,15 +119,10 @@ client.on("message", message => {
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);
 
-            // Consider going asynchronous
-            console.log("test 3");
             jsonfile.writeFileSync(path, storage);
             return;
         }
     }
-    //} catch (err) {
-        //message.channel.send(`Set a channel for counting by using ${prefix}usechannel`);
-    //}
 
     if (!message.content.startsWith(prefix) || message.author.bot || !message.member.hasPermission("KICK_MEMBERS")) return;
 

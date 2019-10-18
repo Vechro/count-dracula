@@ -111,7 +111,7 @@ client.on("message", message => {
                 console.log("A");
                 const user = storage.users.get(message.member.user.id);
                 user.banishments += 1;
-                user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.166 + fibonacci.iterate(user.banishments).number, "days");
+                user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
                 storage.users.set(user);
                 // Ban user
                 restrictUser(user, storage.channelId);
@@ -120,7 +120,7 @@ client.on("message", message => {
                 console.log("B");
                 storage.users.set(message.member.user.id, {
                     banishments: 1,
-                    unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
+                    unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666 + 1, "hours"),
                 });
             }
             message.reply("messed up.");

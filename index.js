@@ -58,12 +58,12 @@ for (const file of commandFiles) {
 
 // TODO: Add DMs for indicating when they're banned with the ban duration
 function restrictUser(userId, channel) {
-    channel.overwritePermission(userId, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
+    channel.overwritePermissions(userId, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
     console.log(`${userId} restricted from accessing channel`);
 }
 
 function unrestrictUser(userId, channel) {
-    channel.overwritePermission(userId, { "SEND_MESSAGES": true }, "Unrestrict access to the designated counting channel.");
+    channel.overwritePermissions(userId, { "SEND_MESSAGES": true }, "Unrestrict access to the designated counting channel.");
     console.log(`${userId} unrestricted from accessing channel`);
 }
 
@@ -95,8 +95,10 @@ client.on("message", message => {
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
     console.log("E");
+    /*
     console.log("channel.id " + message.channel.id);
     console.log("channelId " + storage.channelId);
+    */
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         console.log("F");
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
@@ -121,7 +123,7 @@ client.on("message", message => {
                     unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
                 });
             }
-            message.channel.send(`${message.member} messed up.`);
+            message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);
             console.log("C");
@@ -152,7 +154,7 @@ client.on("message", message => {
     }
 
     try {
-        command.execute(message, args);
+        command.execute(message, args, storage);
     } catch (error) {
         console.error(error);
         message.reply("There was an error trying to execute that command!");

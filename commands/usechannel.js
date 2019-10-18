@@ -5,18 +5,12 @@ module.exports = {
     name: "usechannel",
     description: "Specify a channel to be used for counting.",
     aliases: ["setchannel"],
-    execute(message, args) {
-
-        const storage = jsonfile.readFileSync(path, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+    execute(message, args, storage) {
 
         const channel = message.mentions.channels.first();
 
         storage.counting = true;
-        storage.lastNumber = storage.lastNumber || args[1] || 0;
+        storage.lastNumber = parseInt(args[1], 10) || storage.lastNumber || 0;
         storage.channelId = channel.id;
 
         jsonfile.writeFileSync(path, storage);

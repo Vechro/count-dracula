@@ -5,14 +5,7 @@ const { path } = require("../config.json");
 module.exports = {
     name: "togglecount",
     description: "Start or stop counting.",
-    execute(message) {
-
-        const storage = jsonfile.readFileSync(path, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
-
+    execute(message, args, storage) {
         if (!storage.channelId) {
             message.reply("There is no channel set up for counting.");
             return;

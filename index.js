@@ -81,7 +81,7 @@ function pollUsers() {
     });
 }
 
-// setInterval(pollUsers, 60 * 60 * 1000);
+setInterval(pollUsers, 60 * 60 * 1000);
 
 client.once("ready", () => {
     // Poll asynchronously on launch
@@ -94,14 +94,19 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-
+    console.log("E");
+    console.log("channel.id " + message.channel.id);
+    console.log("channelId " + storage.channelId);
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
+        console.log("F");
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
+            console.log("D");
             storage.lastNumber++;
             jsonfile.writeFileSync(path, storage);
             return;
         } else {
             if (storage.users.has(message.member.user.id)) {
+                console.log("A");
                 const user = storage.users.get(message.member.user.id);
                 user.banishments += 1;
                 user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.166 + fibonacci.iterate(user.banishments).number, "days");
@@ -110,6 +115,7 @@ client.on("message", message => {
                 restrictUser(user, storage.channelId);
 
             } else {
+                console.log("B");
                 storage.users.set(message.member.user.id, {
                     banishments: 1,
                     unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.1 + 1, "days"),
@@ -118,7 +124,7 @@ client.on("message", message => {
             message.channel.send(`${message.member} messed up.`);
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);
-
+            console.log("C");
             jsonfile.writeFileSync(path, storage);
             return;
         }

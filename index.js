@@ -95,21 +95,21 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    console.log("E");
+    // console.log("E");
     /*
     console.log("channel.id " + message.channel.id);
     console.log("channelId " + storage.channelId);
     */
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-        console.log("F");
+        // console.log("F");
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
-            console.log("D");
+            // console.log("D");
             storage.lastNumber++;
             jsonfile.writeFileSync(path, storage);
             return;
         } else {
             if (storage.users.has(message.member.user.id)) {
-                console.log("A");
+                // console.log("A");
                 const user = storage.users.get(message.member.user.id);
                 user.banishments += 1;
                 user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
@@ -118,16 +118,16 @@ client.on("message", message => {
                 restrictUser(user, storage.channelId);
 
             } else {
-                console.log("B");
+                // console.log("B");
                 storage.users.set(message.member.user.id, {
                     banishments: 1,
-                    unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666 + 1, "hours"),
+                    unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
                 });
             }
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);
-            console.log("C");
+            // console.log("C");
             jsonfile.writeFileSync(path, storage);
             return;
         }

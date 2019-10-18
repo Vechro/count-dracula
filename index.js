@@ -14,6 +14,7 @@ const data = {
     counting: true, // Bool
     channelId: 0, // Snowflake/Int
     lastNumber: 0, // Int
+    lastUser: 0, // Snowflake/Int
     users: [], // Map
 };
 // TODO: use fs.mkdirSync(path);

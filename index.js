@@ -12,9 +12,9 @@ client.commands = new Discord.Collection();
 // Original structure of the JSON
 const data = {
     counting: true, // Bool
-    channelId: 0, // Snowflake/Int
+    channelId: 0, // Snowflake
     lastNumber: 0, // Int
-    lastUser: 0, // Snowflake/Int
+    lastUser: 0, // Snowflake
     users: [], // Map
 };
 // TODO: use fs.mkdirSync(path);
@@ -58,13 +58,32 @@ for (const file of commandFiles) {
 }
 
 // TODO: Add DMs for indicating when they're banned with the ban duration
-function restrictUser(userId, channel) {
-    channel.overwritePermissions(userId, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
-    console.log(`${userId} restricted from accessing channel`);
+function restrictUser(guildId, userId, channelId) {
+    const guild = client.guilds.get(guildId);
+    console.log(guild);
+    console.log("-1-");
+    const channel = guild.channels.get(channelId);
+    console.log(channel);
+    console.log("-2-");
+    guild.fetchMember(userId).then((member) => { 
+        channel.overwritePermissions(member.user, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
+        console.log(`${userId} restricted from accessing channel`);
+    }, (err) => { 
+        console.error(err);
+    }).catch(console.error);
+    /*
+    console.log(member);
+    console.log("-3-");
+    console.log(member.user);
+    console.log("-4-");
+    channel.overwritePermissions(member.user, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
+    console.log(`${userId} restricted from accessing channel`);*/
 }
 
-function unrestrictUser(userId, channel) {
-    channel.overwritePermissions(userId, { "SEND_MESSAGES": true }, "Unrestrict access to the designated counting channel.");
+function unrestrictUser(guildId, userId, channelId) {
+    const user = client.fetchUser(userId);
+    const channel = client.channels.get(channelId);
+    channel.overwritePermissions(user, { "SEND_MESSAGES": true }, "Unrestrict access to the designated counting channel.");
     console.log(`${userId} unrestricted from accessing channel`);
 }
 
@@ -75,7 +94,7 @@ function pollUsers() {
     storage.users.forEach(function (user, key) {
         if (user.unbanDate < currentTime && user.unbanDate !== 0) {
             // Unban user
-            unrestrictUser(user, storage.channelId);
+            unrestrictUser(key, storage.channelId);
             user.unbanDate = 0;
 
         }
@@ -102,7 +121,7 @@ client.on("message", message => {
     */
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         // console.log("F");
-        if (isValidInt(countAttempt, storage.lastNumber + 1)) {
+        if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
             // console.log("D");
             storage.lastNumber++;
             jsonfile.writeFileSync(path, storage);
@@ -113,17 +132,21 @@ client.on("message", message => {
                 const user = storage.users.get(message.member.user.id);
                 user.banishments += 1;
                 user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
-                storage.users.set(user);
-                // Ban user
-                restrictUser(user, storage.channelId);
+                // storage.users.set(message.member.user.id, user);
+                // Restrict user
+                restrictUser(message.guild.id, message.member.user.id, storage.channelId);
 
             } else {
                 // console.log("B");
                 storage.users.set(message.member.user.id, {
                     banishments: 1,
+                    guildId: message.guild.id,
                     unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
                 });
+                restrictUser(message.guild.id, message.member.user.id, storage.channelId);
             }
+            message.member.send(`You will be unbanned from counting on ${storage.users.get(message.member.user.id).unbanDate}`);
+            storage.lastUser = message.member.user.id;
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);

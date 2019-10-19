@@ -12,7 +12,8 @@ module.exports = {
         }
 
         storage.counting = true;
-        storage.lastNumber = args[0] || 0;
+        storage.lastNumber = parseInt(args[0], 10) || 0;
+        storage.lastUser = 0;
 
         jsonfile.writeFileSync(path, storage);
         message.reply(storage.lastNumber);

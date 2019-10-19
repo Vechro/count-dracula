@@ -57,34 +57,27 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// TODO: Add DMs for indicating when they're banned with the ban duration
 function restrictUser(guildId, userId, channelId) {
     const guild = client.guilds.get(guildId);
-    console.log(guild);
-    console.log("-1-");
     const channel = guild.channels.get(channelId);
-    console.log(channel);
-    console.log("-2-");
     guild.fetchMember(userId).then((member) => { 
         channel.overwritePermissions(member.user, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
         console.log(`${userId} restricted from accessing channel`);
     }, (err) => { 
         console.error(err);
     }).catch(console.error);
-    /*
-    console.log(member);
-    console.log("-3-");
-    console.log(member.user);
-    console.log("-4-");
-    channel.overwritePermissions(member.user, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
-    console.log(`${userId} restricted from accessing channel`);*/
 }
 
+// TODO: Consolidate these two functions into one
 function unrestrictUser(guildId, userId, channelId) {
-    const user = client.fetchUser(userId);
-    const channel = client.channels.get(channelId);
-    channel.overwritePermissions(user, { "SEND_MESSAGES": true }, "Unrestrict access to the designated counting channel.");
-    console.log(`${userId} unrestricted from accessing channel`);
+    const guild = client.guilds.get(guildId);
+    const channel = guild.channels.get(channelId);
+    guild.fetchMember(userId).then((member) => { 
+        channel.overwritePermissions(member.user, { "SEND_MESSAGES": true }, "Restrict access to the designated counting channel.");
+        console.log(`${userId} restricted from accessing channel`);
+    }, (err) => { 
+        console.error(err);
+    }).catch(console.error);
 }
 
 // This function polls the userlist on an hourly basis to find anyone who should be unbanned
@@ -114,30 +107,20 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    // console.log("E");
-    /*
-    console.log("channel.id " + message.channel.id);
-    console.log("channelId " + storage.channelId);
-    */
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-        // console.log("F");
         if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
-            // console.log("D");
             storage.lastNumber++;
             jsonfile.writeFileSync(path, storage);
             return;
         } else {
             if (storage.users.has(message.member.user.id)) {
-                // console.log("A");
                 const user = storage.users.get(message.member.user.id);
                 user.banishments += 1;
                 user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
                 // storage.users.set(message.member.user.id, user);
-                // Restrict user
                 restrictUser(message.guild.id, message.member.user.id, storage.channelId);
 
             } else {
-                // console.log("B");
                 storage.users.set(message.member.user.id, {
                     banishments: 1,
                     guildId: message.guild.id,
@@ -150,7 +133,6 @@ client.on("message", message => {
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);
-            // console.log("C");
             jsonfile.writeFileSync(path, storage);
             return;
         }

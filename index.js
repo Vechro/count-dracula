@@ -88,6 +88,7 @@ client.on("message", message => {
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
             storage.lastNumber++;
+            storage.lastUser = message.member.user.id;
             jsonfile.writeFileSync(path, storage);
             return;
         } else {

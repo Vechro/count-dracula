@@ -128,7 +128,8 @@ client.on("message", message => {
                 });
                 restrictUser(message.guild.id, message.member.user.id, storage.channelId);
             }
-            message.member.send(`You will be unbanned from counting on ${storage.users.get(message.member.user.id).unbanDate}`);
+            const unbanDate = storage.users.get(message.member.user.id).unbanDate;
+            message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             storage.lastUser = message.member.user.id;
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
@@ -137,8 +138,10 @@ client.on("message", message => {
             return;
         }
     }
-
-    if (!message.content.startsWith(prefix) || message.author.bot || !message.member.hasPermission("KICK_MEMBERS")) return;
+    // TODO: Fix !help inside DMs
+    if (!message.content.startsWith(prefix) || message.author.bot || message.channel.type === "dm" || !message.member.hasPermission("KICK_MEMBERS")) {
+        return;
+    }
 
     const command = client.commands.get(commandName)
         || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));

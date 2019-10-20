@@ -5,6 +5,7 @@ const { path } = require("../config.json");
 module.exports = {
     name: "togglecount",
     description: "Start or stop counting.",
+    guildOnly: true,
     execute(message, args, storage) {
         if (!storage.channelId) {
             message.reply("There is no channel set up for counting.");

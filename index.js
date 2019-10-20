@@ -62,10 +62,10 @@ for (const file of commandFiles) {
 function pollUsers() {
     const currentTime = moment();
 
-    storage.users.forEach(function (user, key) {
+    storage.users.forEach(function (user, id) {
         if (user.unbanDate < currentTime && user.unbanDate !== 0) {
             // Unban user
-            unrestrictUser(key, storage.channelId);
+            unrestrictUser(client, user.guildId, storage.channelId, id);
             user.unbanDate = 0;
 
         }
@@ -111,7 +111,7 @@ client.on("message", message => {
                 const unbanDate = storage.users.get(message.member.user.id).unbanDate;
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
-            // storage.lastUser = message.member.user.id;
+            storage.lastUser = 0;
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);

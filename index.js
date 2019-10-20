@@ -5,6 +5,7 @@ const roman = require("romanjs");
 const moment = require("moment");
 const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");
+const { restrictUser, unrestrictUser } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -12,9 +13,9 @@ client.commands = new Discord.Collection();
 // Original structure of the JSON
 const data = {
     counting: true, // Bool
-    channelId: 0, // Snowflake
+    channelId: 0, // Snowflake/String
     lastNumber: 0, // Int
-    lastUser: 0, // Snowflake
+    lastUser: 0, // Snowflake/String
     users: [], // Map
 };
 // TODO: use fs.mkdirSync(path);
@@ -57,29 +58,6 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-function restrictUser(guildId, userId, channelId) {
-    const guild = client.guilds.get(guildId);
-    const channel = guild.channels.get(channelId);
-    guild.fetchMember(userId).then((member) => { 
-        channel.overwritePermissions(member.user, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
-        console.log(`${userId} restricted from accessing channel`);
-    }, (err) => { 
-        console.error(err);
-    }).catch(console.error);
-}
-
-// TODO: Consolidate these two functions into one
-function unrestrictUser(guildId, userId, channelId) {
-    const guild = client.guilds.get(guildId);
-    const channel = guild.channels.get(channelId);
-    guild.fetchMember(userId).then((member) => { 
-        channel.overwritePermissions(member.user, { "SEND_MESSAGES": true }, "Restrict access to the designated counting channel.");
-        console.log(`${userId} restricted from accessing channel`);
-    }, (err) => { 
-        console.error(err);
-    }).catch(console.error);
-}
-
 // This function polls the userlist on an hourly basis to find anyone who should be unbanned
 function pollUsers() {
     const currentTime = moment();
@@ -101,7 +79,7 @@ client.once("ready", () => {
     setTimeout(pollUsers, 0);
     console.log("Ready!");
 });
-// (TODO:) resetting the count on command misuse
+// TODO: resetting the count on command misuse
 client.on("message", message => {
 
     const args = message.content.slice(prefix.length).split(/ +/);
@@ -119,7 +97,7 @@ client.on("message", message => {
                     user.banishments += 1;
                     user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
                     // storage.users.set(message.member.user.id, user);
-                    restrictUser(message.guild.id, message.member.user.id, storage.channelId);
+                    restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
 
                 } else {
                     storage.users.set(message.member.user.id, {
@@ -127,7 +105,7 @@ client.on("message", message => {
                         guildId: message.guild.id,
                         unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
                     });
-                    restrictUser(message.guild.id, message.member.user.id, storage.channelId);
+                    restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
                 }
                 const unbanDate = storage.users.get(message.member.user.id).unbanDate;
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);

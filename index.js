@@ -111,7 +111,7 @@ client.on("message", message => {
                 const unbanDate = storage.users.get(message.member.user.id).unbanDate;
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
-            storage.lastUser = message.member.user.id;
+            // storage.lastUser = message.member.user.id;
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);

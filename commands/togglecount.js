@@ -1,7 +1,6 @@
 const jsonfile = require("jsonfile");
 const { path } = require("../config.json");
 
-// TODO: Verify a channel is set before allowing the command to be used
 module.exports = {
     name: "togglecount",
     description: "Start or stop counting.",

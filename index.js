@@ -113,23 +113,25 @@ client.on("message", message => {
             jsonfile.writeFileSync(path, storage);
             return;
         } else {
-            if (storage.users.has(message.member.user.id)) {
-                const user = storage.users.get(message.member.user.id);
-                user.banishments += 1;
-                user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
-                // storage.users.set(message.member.user.id, user);
-                restrictUser(message.guild.id, message.member.user.id, storage.channelId);
+            if (!message.member.hasPermission("KICK_MEMBERS")) {
+                if (storage.users.has(message.member.user.id)) {
+                    const user = storage.users.get(message.member.user.id);
+                    user.banishments += 1;
+                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
+                    // storage.users.set(message.member.user.id, user);
+                    restrictUser(message.guild.id, message.member.user.id, storage.channelId);
 
-            } else {
-                storage.users.set(message.member.user.id, {
-                    banishments: 1,
-                    guildId: message.guild.id,
-                    unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
-                });
-                restrictUser(message.guild.id, message.member.user.id, storage.channelId);
+                } else {
+                    storage.users.set(message.member.user.id, {
+                        banishments: 1,
+                        guildId: message.guild.id,
+                        unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
+                    });
+                    restrictUser(message.guild.id, message.member.user.id, storage.channelId);
+                }
+                const unbanDate = storage.users.get(message.member.user.id).unbanDate;
+                message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
-            const unbanDate = storage.users.get(message.member.user.id).unbanDate;
-            message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             storage.lastUser = message.member.user.id;
             message.reply("messed up.");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);

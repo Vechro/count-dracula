@@ -10,7 +10,7 @@ module.exports = {
     execute(message, args, storage) {
         unrestrictUser(message.client, message.guild.id, storage.channelId, message.mentions.users.first().id);
 
-        const user = storage.users.get(message.member.user.id);
+        const user = storage.users.get(message.mentions.users.first().id);
         user.unbanDate = 0;
 
         jsonfile.writeFileSync(path, storage);

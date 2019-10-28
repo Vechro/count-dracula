@@ -4,7 +4,7 @@
   "description": "Counting bot",
   "main": "index.js",
   "scripts": {
-    "test": "node ."
+    "start": "node ."
   },
   "author": "",
   "license": "MIT",

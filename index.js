@@ -42,7 +42,6 @@ function isValidInt(string, expectedInt) {
     if (parseInt(string, 10) === expectedInt) {
         return true;
     }
-    // I'm not entirely sure what the next block does but it's supposedly for performance
     else if (string === "0" || string === "1") {
         return false;
     }
@@ -119,9 +118,16 @@ client.on("message", message => {
             return;
         }
     }
-    // TODO: Fix !help inside DMs
-    if (!message.content.startsWith(prefix) || message.author.bot || message.channel.type === "dm" || !message.member.hasPermission("KICK_MEMBERS")) {
-        return;
+    // TODO: Fix this hacky mess
+    if (!message.content.startsWith(prefix) || message.author.bot) {
+        try {
+            if (!message.member.hasPermission("KICK_MEMBERS")) {
+                return;
+            }
+        }
+        catch(err) {
+            // console.log(err);
+        }
     }
 
     const command = client.commands.get(commandName)
@@ -130,7 +136,11 @@ client.on("message", message => {
     if (!command) return;
 
     if (command.guildOnly && message.channel.type !== "text") {
-        return message.reply("I can't execute that command inside DMs!");
+        return message.reply("I can't execute that command inside of DMs!");
+    }
+
+    if (command.dmOnly && message.channel.type !== "dm") {
+        return message.reply("I can't execute that command outside of DMs!");
     }
 
     if (command.args && !args.length) {

@@ -91,7 +91,7 @@ client.on("message", message => {
             jsonfile.writeFileSync(path, storage);
             return;
         } else {
-            if (!message.member.hasPermission("KICK_MEMBERS")) {
+            if (!message.member.hasPermission("MANAGE_ROLES")) {
                 if (storage.users.has(message.member.user.id)) {
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
@@ -121,7 +121,7 @@ client.on("message", message => {
     // TODO: Fix this hacky mess
     if (!message.content.startsWith(prefix) || message.author.bot) {
         try {
-            if (!message.member.hasPermission("KICK_MEMBERS")) {
+            if (!message.member.hasPermission("MANAGE_ROLES")) {
                 return;
             }
         }

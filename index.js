@@ -95,7 +95,7 @@ client.on("message", message => {
                 if (storage.users.has(message.member.user.id)) {
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + fibonacci.iterate(user.banishments).number, "hours");
+                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + Math.pow(fibonacci.iterate(user.banishments).number, 1.6), "hours");
                     // storage.users.set(message.member.user.id, user);
                     restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
 

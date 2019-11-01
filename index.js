@@ -120,14 +120,11 @@ client.on("message", message => {
     }
     // TODO: Fix this hacky mess
     if (!message.content.startsWith(prefix) || message.author.bot) {
-        try {
-            if (!message.member.hasPermission("MANAGE_ROLES")) {
-                return;
-            }
-        }
-        catch(err) {
-            // console.log(err);
-        }
+        return;
+    }
+
+    if (!message.channel.type === "dm" || !message.member.hasPermission("MANAGE_ROLES")) {
+        return;
     }
 
     const command = client.commands.get(commandName)

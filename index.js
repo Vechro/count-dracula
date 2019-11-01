@@ -45,8 +45,12 @@ function isValidInt(string, expectedInt) {
     else if (string === "0" || string === "1") {
         return false;
     }
-    else {
-        return parseInt(string, 2) === expectedInt || parseInt(string, 16) === expectedInt || roman.parseRoman(string) === expectedInt;
+    else if (parseInt(string, 2) === expectedInt || roman.parseRoman(string) === expectedInt) {
+        return true;
+    } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -96,7 +100,6 @@ client.on("message", message => {
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
                     user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + Math.pow(fibonacci.iterate(user.banishments).number, 1.6), "hours");
-                    // storage.users.set(message.member.user.id, user);
                     restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
 
                 } else {
@@ -123,7 +126,7 @@ client.on("message", message => {
         return;
     }
 
-    if (!message.channel.type === "dm" || !message.member.hasPermission("MANAGE_ROLES")) {
+    if (!message.member.hasPermission("MANAGE_ROLES")) {
         return;
     }
 
@@ -134,10 +137,6 @@ client.on("message", message => {
 
     if (command.guildOnly && message.channel.type !== "text") {
         return message.reply("I can't execute that command inside of DMs!");
-    }
-
-    if (command.dmOnly && message.channel.type !== "dm") {
-        return message.reply("I can't execute that command outside of DMs!");
     }
 
     if (command.args && !args.length) {

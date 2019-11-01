@@ -1,8 +1,8 @@
 module.exports = {
     name: "dumpjson",
     description: "Dump all of the data in JSON.",
-    dmOnly: true,
+    guildOnly: true,
     execute(message, args, storage) {
-        message.reply(JSON.stringify(storage, null, 2));
+        message.send(JSON.stringify(storage, null, 2), { split: true });
     },
 };

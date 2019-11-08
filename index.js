@@ -121,7 +121,7 @@ client.on("message", message => {
             return;
         }
     }
-    // TODO: Fix this hacky mess
+
     if (!message.content.startsWith(prefix) || message.author.bot || message.channel.type !== "text") {
         return;
     }

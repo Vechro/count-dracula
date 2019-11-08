@@ -11,7 +11,7 @@ module.exports = {
         }
 
         storage.counting = !storage.counting;
-
+        // TODO: convert this to an actual channel
         if (storage.counting) {
             storage.channelId.send("Counting started!");
             storage.channelId.send(storage.lastNumber);
@@ -20,6 +20,6 @@ module.exports = {
         }
 
         jsonfile.writeFileSync(path, storage);
-        message.send(storage.lastNumber);
+        message.channel.send(storage.lastNumber);
     },
 };

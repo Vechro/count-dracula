@@ -16,6 +16,6 @@ module.exports = {
         storage.lastUser = 0;
 
         jsonfile.writeFileSync(path, storage);
-        message.reply(storage.lastNumber);
+        message.send(storage.lastNumber);
     },
 };

@@ -5,7 +5,6 @@ module.exports = {
     name: "usechannel",
     description: "Specify a channel to be used for counting.",
     aliases: ["setchannel"],
-    guildOnly: true,
     execute(message, args, storage) {
 
         const channel = message.mentions.channels.first();

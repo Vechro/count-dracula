@@ -122,7 +122,7 @@ client.on("message", message => {
         }
     }
     // TODO: Fix this hacky mess
-    if (!message.content.startsWith(prefix) || message.author.bot) {
+    if (!message.content.startsWith(prefix) || message.author.bot || message.channel.type !== "text") {
         return;
     }
 
@@ -134,10 +134,6 @@ client.on("message", message => {
         || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
     if (!command) return;
-
-    if (command.guildOnly && message.channel.type !== "text") {
-        return message.reply("I can't execute that command inside of DMs!");
-    }
 
     if (command.args && !args.length) {
         let reply = `You didn't provide any arguments, ${message.author}!`;

@@ -6,7 +6,6 @@ module.exports = {
     name: "unrestrict",
     description: "Unrestrict user from counting.",
     aliases: ["unban"],
-    guildOnly: true,
     execute(message, args, storage) {
         unrestrictUser(message.client, message.guild.id, storage.channelId, message.mentions.users.first().id);
 

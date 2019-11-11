@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 const moment = require("moment");
 const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");
-const { restrictUser, unrestrictUser, verifyPrecedingMessage, isValidInt } = require("./functions");
+const { getRandom, restrictUser, unrestrictUser, verifyPrecedingMessage, isValidInt } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -102,8 +102,9 @@ client.on("message", message => {
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
             storage.lastUser = 0;
+            const randomFloat = getRandom(0.6, 0.8);
             message.channel.send(message.member + " messed up!");
-            storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
+            storage.lastNumber = Math.floor(storage.lastNumber * randomFloat);
             message.channel.send(storage.lastNumber);
             jsonfile.writeFileSync(path, storage);
             return;

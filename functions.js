@@ -1,11 +1,16 @@
 const roman = require("romanjs");
 
 module.exports = {
+    getRandom,
     restrictUser,
     unrestrictUser,
     isValidInt,
     verifyPrecedingMessage,
 };
+
+function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 function getChannel(client, guildId, channelId) {
     const guild = client.guilds.get(guildId);

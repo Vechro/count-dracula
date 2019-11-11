@@ -1,7 +1,6 @@
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
-const roman = require("romanjs");
 const moment = require("moment");
 const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");

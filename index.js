@@ -102,7 +102,7 @@ client.on("message", message => {
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
             storage.lastUser = 0;
-            message.reply("messed up.");
+            message.channel.send(message.member + " messed up!");
             storage.lastNumber = Math.floor(storage.lastNumber * 0.666);
             message.channel.send(storage.lastNumber);
             jsonfile.writeFileSync(path, storage);

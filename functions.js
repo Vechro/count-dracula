@@ -1,5 +1,12 @@
 const roman = require("romanjs");
 
+module.exports = {
+    restrictUser,
+    unrestrictUser,
+    isValidInt,
+    verifyPrecedingMessage,
+};
+
 function getChannel(client, guildId, channelId) {
     const guild = client.guilds.get(guildId);
     return guild.channels.get(channelId);
@@ -52,10 +59,3 @@ function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, exp
     return isValidInt(countAttempt, expectedNumber);
 
 }
-
-module.exports = {
-    restrictUser,
-    unrestrictUser,
-    isValidInt,
-    verifyPrecedingMessage,
-};

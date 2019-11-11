@@ -1,3 +1,8 @@
+function getChannel(client, guildId, channelId) {
+    const guild = client.guilds.get(guildId);
+    return guild.channels.get(channelId);
+}
+
 function restrictUser(client, guildId, channelId, userId) {
     const guild = client.guilds.get(guildId);
     const channel = guild.channels.get(channelId);
@@ -21,7 +26,34 @@ function unrestrictUser(client, guildId, channelId, userId) {
     }).catch(console.error);
 }
 
+function isValidInt(string, expectedInt) {
+    if (parseInt(string, 10) === expectedInt) {
+        return true;
+    }
+    else if (string === "0" || string === "1") {
+        return false;
+    }
+    else if (parseInt(string, 2) === expectedInt || roman.parseRoman(string) === expectedInt) {
+        return true;
+    } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
+    const channel = getChannel(client, guildId, channelId);
+    const messages = channel.fetchMessages({ limit: 1, before: beforeMessageId }); // This returns a promise, fix it
+    const message = messages[0];
+    const countAttempt = message.content.split(/ +/)[0];
+    return isValidInt(countAttempt, expectedNumber);
+
+}
+
 module.exports = {
     restrictUser,
     unrestrictUser,
+    isValidInt,
+    verifyPrecedingMessage,
 };

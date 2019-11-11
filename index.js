@@ -5,7 +5,7 @@ const roman = require("romanjs");
 const moment = require("moment");
 const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");
-const { restrictUser, unrestrictUser } = require("./functions");
+const { restrictUser, unrestrictUser, verifyPrecedingMessage, isValidInt } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -14,6 +14,7 @@ client.commands = new Discord.Collection();
 const data = {
     counting: true, // Bool
     channelId: 0, // Snowflake/String
+    lastMessageId: 0, // Snowflake/String
     lastNumber: 0, // Int
     lastUser: 0, // Snowflake/String
     users: [], // Map
@@ -38,22 +39,6 @@ function InitializeStorage(storage) {
     return storage;
 }
 
-function isValidInt(string, expectedInt) {
-    if (parseInt(string, 10) === expectedInt) {
-        return true;
-    }
-    else if (string === "0" || string === "1") {
-        return false;
-    }
-    else if (parseInt(string, 2) === expectedInt || roman.parseRoman(string) === expectedInt) {
-        return true;
-    } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
@@ -61,7 +46,7 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// This function polls the userlist on an hourly basis to find anyone who should be unbanned
+// This function will be called on an hourly basis to find anyone who should be unbanned
 function pollUsers() {
     const currentTime = moment();
 
@@ -92,11 +77,14 @@ client.on("message", message => {
         if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
+            storage.lastMessageId = message.id;
             jsonfile.writeFileSync(path, storage);
             return;
+
         } else {
             if (!message.member.hasPermission("MANAGE_ROLES")) {
                 if (storage.users.has(message.member.user.id)) {
+
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
                     user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + Math.pow(fibonacci.iterate(user.banishments).number, 1.6), "hours");
@@ -108,6 +96,7 @@ client.on("message", message => {
                         guildId: message.guild.id,
                         unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
                     });
+
                     restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
                 }
                 const unbanDate = storage.users.get(message.member.user.id).unbanDate;

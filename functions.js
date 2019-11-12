@@ -58,9 +58,10 @@ function isValidInt(string, expectedInt) {
 
 function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
     const channel = getChannel(client, guildId, channelId);
-    const messages = channel.fetchMessages({ limit: 1, before: beforeMessageId }); // This returns a promise, fix it
+    const messages = channel.fetchMessages({ limit: 1, before: beforeMessageId })
+        .then(messages => console.log(`Received ${messages.size} messages`)) // Get the result out of the .then scope
+        .catch(console.error);
     const message = messages[0];
     const countAttempt = message.content.split(/ +/)[0];
     return isValidInt(countAttempt, expectedNumber);
-
 }

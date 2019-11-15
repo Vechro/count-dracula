@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 const moment = require("moment");
 const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");
-const { getRandom, restrictUser, unrestrictUser, verifyPrecedingMessage, isValidInt } = require("./functions");
+const { getRandom, restrictUser, unrestrictUser, getPrecedingMessageNumber, isValidInt } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -13,7 +13,7 @@ client.commands = new Discord.Collection();
 const data = {
     counting: true, // Bool
     channelId: 0, // Snowflake/String
-    lastMessageId: 0, // Snowflake/String
+    // lastMessageId: 0, // Snowflake/String
     lastNumber: 0, // Int
     lastUser: 0, // Snowflake/String
     users: [], // Map
@@ -72,12 +72,19 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
+    const precedingNumber = getPrecedingMessageNumber(client, message.guild.id, storage.channelId, message.id, storage.lastNumber);
+
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         // if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
+
+        if (precedingNumber !== storage.lastNumber) {
+            storage.lastNumber = precedingNumber;
+        }
+
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
-            storage.lastMessageId = message.id;
+            // storage.lastMessageId = message.id;
             jsonfile.writeFileSync(path, storage);
             return;
 

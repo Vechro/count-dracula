@@ -57,13 +57,18 @@ function isValidInt(string, expectedInt) {
 }
 
 function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
-    const channel = getChannel(client, guildId, channelId);
-    const messages = new Promise(channel.fetchMessages({ limit: 1, before: beforeMessageId }));
-    messages
-        .then((messages) => {
-            const message = messages[0];
-            const countAttempt = message.content.split(/ +/)[0];
-            return isValidInt(countAttempt, expectedNumber);
-        })
-        .catch(console.error);
+    return new Promise((resolve, reject) => {
+        const channel = getChannel(client, guildId, channelId);
+        channel.fetchMessages({ limit: 1, before: beforeMessageId })
+            .then((messages) => {
+                const message = messages[0];
+                const countAttempt = message.content.split(/ +/)[0];
+                if (isValidInt(countAttempt, expectedNumber)) {
+                    resolve("Verified");
+                } else {
+                    reject(Error("Failed"));
+                }
+            })
+            .catch(console.error);
+    });
 }

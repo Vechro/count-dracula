@@ -82,7 +82,7 @@ verifyPrecedingMessage(...).then(function (messages) {
     console.log(`Received ${messages.size} messages`)
 }, console.error)
 */
-
+// Supposed to fix editing/deleting
 async function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
     const channel = getChannel(client, guildId, channelId);
     const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });

@@ -14,3 +14,4 @@ Messing up will temporarily remove your right to count (by assigning you with a 
 * Use Lodash for debouncing to lower the amount of disk writes
 * Deleted message detection
 * Fix help properly
+* Get rid of the fibonacci dependency

@@ -56,6 +56,8 @@ function isValidInt(string, expectedInt) {
     }
 }
 
+/*
+// Unused
 function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
     return new Promise((resolve, reject) => {
         const channel = getChannel(client, guildId, channelId);
@@ -71,4 +73,25 @@ function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, exp
             })
             .catch(console.error);
     });
+}
+*/
+
+/*
+// To be used as such, returns 
+verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber).then(function (messages) {
+    console.log(`Received ${messages.size} messages`)
+}, console.error)
+*/
+
+async function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
+    const channel = getChannel(client, guildId, channelId);
+    const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });
+    const message = messages[0];
+    const countAttempt = message.content.split(/ +/)[0];
+    
+    if (!isValidInt(countAttempt, expectedNumber)) {
+        throw Error("Failed");
+    }
+
+    return true;
 }

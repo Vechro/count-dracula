@@ -78,7 +78,7 @@ function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, exp
 
 /*
 // To be used as such, returns 
-verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber).then(function (messages) {
+verifyPrecedingMessage(...).then(function (messages) {
     console.log(`Received ${messages.size} messages`)
 }, console.error)
 */
@@ -86,10 +86,10 @@ verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumb
 async function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
     const channel = getChannel(client, guildId, channelId);
     const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });
-    const message = messages[0];
+    const message = messages.first();
     const countAttempt = message.content.split(/ +/)[0];
     
-    if (!isValidInt(countAttempt, expectedNumber)) {
+    if (!isValidInt(countAttempt, expectedNumber) || message.deleted) {
         throw Error("Failed");
     }
 

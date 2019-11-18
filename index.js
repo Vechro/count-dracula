@@ -115,7 +115,7 @@ client.on("message", message => {
             const randomInt = getRandom(33, 49);
 
             let proposedNumber = storage.lastNumber * randomFloat;
-            if (storage.lastNumber - proposedNumber > randomInt) {
+            if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
                 proposedNumber = storage.lastNumber - randomInt;
             }
 

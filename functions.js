@@ -104,6 +104,7 @@ verifyPrecedingMessage(...).then(function (messages) {
 // You should check if this function returns the same number as you provided it
 async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessageId) {
     const channel = getChannel(client, guildId, channelId);
+    // TODO: Ignore commands and bot
     const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });
     const message = messages.first();
     const countAttempt = message.content.split(/ +/)[0];

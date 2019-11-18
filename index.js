@@ -13,7 +13,6 @@ client.commands = new Discord.Collection();
 const data = {
     counting: true, // Bool
     channelId: 0, // Snowflake/String
-    // lastMessageId: 0, // Snowflake/String
     lastNumber: 0, // Int
     lastUser: 0, // Snowflake/String
     users: [], // Map
@@ -84,7 +83,6 @@ client.on("message", message => {
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
-            // storage.lastMessageId = message.id;
             jsonfile.writeFileSync(path, storage);
             return;
 

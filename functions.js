@@ -39,7 +39,7 @@ function unrestrictUser(client, guildId, channelId, userId) {
         console.error(err);
     }).catch(console.error);
 }
-
+// TODO: Refactor it into convertToBase10 for easy comparisons to lastNumber
 function isValidInt(string, expectedInt) {
     if (parseInt(string, 10) === expectedInt) {
         return true;
@@ -84,21 +84,11 @@ verifyPrecedingMessage(...).then(function (messages) {
 */
 // Supposed to fix editing
 // You should check if this function returns the same number as you provided it
-async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessageId, expectedNumber) {
+async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessageId) {
     const channel = getChannel(client, guildId, channelId);
     const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });
     const message = messages.first();
     const countAttempt = message.content.split(/ +/)[0];
-    // TODO: check if the message been edited instead
-    if (!isValidInt(countAttempt, expectedNumber)) {
-        return expectedNumber;
-        // Very problematic since I have a feeling this won't spot deleted messages and will assume the message before
-        // the deleted message edited theirs and will punish them
-        // Ideally I'd keep track of the last message along with the last number
-        // but that still wouldn't work if multiple people delete messages
-        // I should instead just look at what the previous number is, which wouldn't be able to punish anyone
-        // but it'd be pretty foolproof at not punishing innocents
-    }
 
-    return expectedNumber;
+    return countAttempt;
 }

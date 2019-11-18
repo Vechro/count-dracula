@@ -72,7 +72,7 @@ client.on("message", message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    const precedingNumber = getPrecedingMessageNumber(client, message.guild.id, storage.channelId, message.id, storage.lastNumber);
+    const precedingNumber = getPrecedingMessageNumber(client, message.guild.id, storage.channelId, message.id);
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         // if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
@@ -110,9 +110,17 @@ client.on("message", message => {
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
             storage.lastUser = 0;
+
             const randomFloat = getRandom(0.6, 0.8);
+            const randomInt = getRandom(33, 49);
+
+            let proposedNumber = storage.lastNumber * randomFloat;
+            if (storage.lastNumber - proposedNumber > randomInt) {
+                proposedNumber = storage.lastNumber - randomInt;
+            }
+
             message.channel.send(message.member + " messed up!");
-            storage.lastNumber = Math.floor(storage.lastNumber * randomFloat);
+            storage.lastNumber = Math.floor(proposedNumber);
             message.channel.send(storage.lastNumber);
             jsonfile.writeFileSync(path, storage);
             return;

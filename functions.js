@@ -40,6 +40,7 @@ function unrestrictUser(client, guildId, channelId, userId) {
     }).catch(console.error);
 }
 // TODO: Refactor it into convertToBase10 for easy comparisons to lastNumber
+// TODO: eliminate edge cases and exploits as parseInt is super permissive
 function isValidInt(string, expectedInt) {
     if (parseInt(string, 10) === expectedInt) {
         return true;
@@ -53,6 +54,23 @@ function isValidInt(string, expectedInt) {
         return true;
     } else {
         return false;
+    }
+}
+
+// Same as isValidInt but also returns the number in base-10 or NaN
+function verifyInt(string, expectedInt) {
+    if (parseInt(string, 10) === expectedInt) {
+        return parseInt(string, 10);
+    } else if (string === "0" || string === "1") {
+        return NaN;
+    } else if (parseInt(string, 2) === expectedInt) {
+        return parseInt(string, 2);
+    } else if (roman.parseRoman(string) === expectedInt) {
+        return roman.parseRoman(string);
+    } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
+        return parseInt(string, 16);
+    } else {
+        return NaN;
     }
 }
 
@@ -90,5 +108,5 @@ async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessa
     const message = messages.first();
     const countAttempt = message.content.split(/ +/)[0];
 
-    return countAttempt;
+    return verifyInt(countAttempt);
 }

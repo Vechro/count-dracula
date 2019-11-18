@@ -77,7 +77,7 @@ function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, exp
 */
 
 /*
-// To be used as such, returns 
+// To be used as such, TODO: returns interpreted number which can be compared to refactored convertToBase10
 verifyPrecedingMessage(...).then(function (messages) {
     console.log(`Received ${messages.size} messages`)
 }, console.error)

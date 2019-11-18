@@ -109,6 +109,7 @@ client.on("message", message => {
                 const unbanDate = storage.users.get(message.member.user.id).unbanDate;
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
             }
+
             storage.lastUser = 0;
 
             const randomFloat = getRandom(0.6, 0.8);

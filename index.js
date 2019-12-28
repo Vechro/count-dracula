@@ -80,7 +80,7 @@ async function handleMessage(message) {
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         // if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
 
-        const precedingNumber = await getPrecedingMessageNumber(client, message.guild.id, storage.channelId, message.id);
+        const precedingNumber = await getPrecedingMessageNumber(client, message, storage.channelId);
 
         console.log("0.5 " + storage.lastNumber);
 
@@ -93,7 +93,7 @@ async function handleMessage(message) {
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
-            // jsonfile.writeFileSync(path, storage);
+            jsonfile.writeFileSync(path, storage);
             return;
 
         } else {

@@ -83,13 +83,15 @@ verifyPrecedingMessage(...).then(function (messages) {
 */
 // Supposed to fix editing
 // You should check if this function returns the same number as you provided it
-async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessageId) {
+async function getPrecedingMessageNumber(client, message, channelId) {
     // console.log(beforeMessageId);
+    const guildId = message.guild.id;
+    const beforeMessageId = message.id;
     const channel = getChannel(client, guildId, channelId);
     // TODO: Ignore commands and bot if it's not a number
     const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });
-    const message = messages.first();
-    const countAttempt = message.content.split(/ +/)[0];
+    const precedingMessage = messages.first();
+    const countAttempt = precedingMessage.content.split(/ +/)[0];
 
     // TODO: Add error handling
     return interpretInt(countAttempt);

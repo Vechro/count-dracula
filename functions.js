@@ -76,26 +76,6 @@ function interpretInt(string) {
 }
 
 /*
-// Unused
-function verifyPrecedingMessage(client, guildId, channelId, beforeMessageId, expectedNumber) {
-    return new Promise((resolve, reject) => {
-        const channel = getChannel(client, guildId, channelId);
-        channel.fetchMessages({ limit: 1, before: beforeMessageId })
-            .then((messages) => {
-                const message = messages[0];
-                const countAttempt = message.content.split(/ +/)[0];
-                if (isValidInt(countAttempt, expectedNumber)) {
-                    resolve("Verified");
-                } else {
-                    reject(Error("Failed"));
-                }
-            })
-            .catch(console.error);
-    });
-}
-*/
-
-/*
 // To be used as such, TODO: returns interpreted number which can be compared to refactored convertToBase10
 verifyPrecedingMessage(...).then(function (messages) {
     console.log(`Received ${messages.size} messages`)

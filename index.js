@@ -2,9 +2,8 @@ const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
 const moment = require("moment");
-const fibonacci = require("fibonacci");
 const { prefix, token, path } = require("./config.json");
-const { getRandom, restrictUser, unrestrictUser, getPrecedingMessageNumber, isValidInt } = require("./functions");
+const { getRandom, restrictUser, unrestrictUser, getPrecedingMessageNumber, isValidInt, fibonacci } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -102,7 +101,7 @@ async function handleMessage(message) {
 
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + Math.pow(fibonacci.iterate(user.banishments).number, 1.6), "hours");
+                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + Math.pow(fibonacci(user.banishments), 1.6), "hours");
                     restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
 
                 } else {

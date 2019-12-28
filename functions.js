@@ -6,6 +6,7 @@ module.exports = {
     unrestrictUser,
     isValidInt,
     getPrecedingMessageNumber,
+    fibonacci,
 };
 
 function getRandom(min, max) {
@@ -85,14 +86,35 @@ verifyPrecedingMessage(...).then(function (messages) {
 // You should check if this function returns the same number as you provided it
 async function getPrecedingMessageNumber(client, message, channelId) {
     // console.log(beforeMessageId);
-    const guildId = message.guild.id;
-    const beforeMessageId = message.id;
-    const channel = getChannel(client, guildId, channelId);
+    const channel = getChannel(client, message.guild.id, channelId);
     // TODO: Ignore commands and bot if it's not a number
-    const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });
+    const messages = await channel.fetchMessages({ limit: 1, before: message.id });
     const precedingMessage = messages.first();
-    const countAttempt = precedingMessage.content.split(/ +/)[0];
+    /*
+    const editedMessages = precedingMessage.edits;
+    console.log(editedMessages);
+    */
+    if (precedingMessage.edits) {
+        const editedMessages = precedingMessage.edits;
+        console.log(editedMessages);
+        const originalMessage = editedMessages[editedMessages.length - 1];
+        const countAttempt = originalMessage.content.split(/ +/)[0];
+        return interpretInt(countAttempt);
+    } else {
+        const countAttempt = precedingMessage.content.split(/ +/)[0];
+        return interpretInt(countAttempt);
+    }
+}
 
-    // TODO: Add error handling
-    return interpretInt(countAttempt);
+function fibonacci(num) {
+    let a = 1, b = 0, temp;
+
+    while (num >= 0) {
+        temp = a;
+        a = a + b;
+        b = temp;
+        num--;
+    }
+
+    return b;
 }

@@ -15,7 +15,7 @@ module.exports = {
         storage.lastUser = 0;
 
         jsonfile.writeFileSync(path, storage);
-        console.log(storage.lastNumber);
+        // console.log(storage.lastNumber);
         channel.send("Channel set for counting");
         channel.send(storage.lastNumber);
     },

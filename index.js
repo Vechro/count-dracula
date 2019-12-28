@@ -67,23 +67,33 @@ client.once("ready", () => {
 });
 // TODO: resetting the count on command misuse
 client.on("message", message => {
+    handleMessage(message).catch(function (err) {
+        console.warn(err);
+    });
+});
 
+async function handleMessage(message) {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
-    const precedingNumber = getPrecedingMessageNumber(client, message.guild.id, storage.channelId, message.id);
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         // if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
+
+        const precedingNumber = await getPrecedingMessageNumber(client, message.guild.id, storage.channelId, message.id);
+
+        console.log("0.5 " + storage.lastNumber);
 
         if (precedingNumber !== storage.lastNumber) {
             storage.lastNumber = precedingNumber;
         }
 
+        console.log("1 " + storage.lastNumber);
+
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
-            jsonfile.writeFileSync(path, storage);
+            // jsonfile.writeFileSync(path, storage);
             return;
 
         } else {
@@ -113,10 +123,14 @@ client.on("message", message => {
             const randomFloat = getRandom(0.6, 0.8);
             const randomInt = getRandom(33, 49);
 
+            console.log("2 " + storage.lastNumber);
+
             let proposedNumber = storage.lastNumber * randomFloat;
             if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
                 proposedNumber = storage.lastNumber - randomInt;
             }
+
+            console.log("3 " + storage.lastNumber);
 
             message.channel.send(message.member + " messed up!");
             storage.lastNumber = Math.floor(proposedNumber);
@@ -155,6 +169,6 @@ client.on("message", message => {
         console.error(error);
         message.reply("There was an error trying to execute that command!");
     }
-});
+}
 
 client.login(token);

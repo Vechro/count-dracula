@@ -57,20 +57,21 @@ function isValidInt(string, expectedInt) {
     }
 }
 
-// Same as isValidInt but also returns the number in base-10 or NaN
+// Same as isValidInt but also returns the number in base-10 or null
 function verifyInt(string, expectedInt) {
+    console.log("string " + string + "/ int " + expectedInt);
     if (parseInt(string, 10) === expectedInt) {
         return parseInt(string, 10);
     } else if (string === "0" || string === "1") {
-        return NaN;
-    } else if (parseInt(string, 2) === expectedInt) {
-        return parseInt(string, 2);
+        return null;
+    } else if (string.startsWith("0b") && parseInt(string.substr(2), 2) === expectedInt) {
+        return parseInt(string.substr(2), 2);
     } else if (roman.parseRoman(string) === expectedInt) {
         return roman.parseRoman(string);
     } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
         return parseInt(string, 16);
     } else {
-        return NaN;
+        return null;
     }
 }
 
@@ -103,7 +104,7 @@ verifyPrecedingMessage(...).then(function (messages) {
 // Supposed to fix editing
 // You should check if this function returns the same number as you provided it
 async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessageId) {
-    console.log(beforeMessageId);
+    // console.log(beforeMessageId);
     const channel = getChannel(client, guildId, channelId);
     // TODO: Ignore commands and bot if it's not a number
     const messages = await channel.fetchMessages({ limit: 1, before: beforeMessageId });

@@ -58,17 +58,17 @@ function isValidInt(string, expectedInt) {
 }
 
 // Same as isValidInt but also returns the number in base-10 or null
-function verifyInt(string, expectedInt) {
-    console.log("string " + string + "/ int " + expectedInt);
-    if (parseInt(string, 10) === expectedInt) {
+function interpretInt(string) {
+    console.log("string " + string);
+    if (parseInt(string, 10)) {
         return parseInt(string, 10);
     } else if (string === "0" || string === "1") {
         return null;
-    } else if (string.startsWith("0b") && parseInt(string.substr(2), 2) === expectedInt) {
+    } else if (string.startsWith("0b") && parseInt(string.substr(2), 2)) {
         return parseInt(string.substr(2), 2);
-    } else if (roman.parseRoman(string) === expectedInt) {
+    } else if (roman.parseRoman(string)) {
         return roman.parseRoman(string);
-    } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
+    } else if (string.startsWith("0x") && parseInt(string, 16)) {
         return parseInt(string, 16);
     } else {
         return null;
@@ -111,5 +111,6 @@ async function getPrecedingMessageNumber(client, guildId, channelId, beforeMessa
     const message = messages.first();
     const countAttempt = message.content.split(/ +/)[0];
 
-    return verifyInt(countAttempt);
+    // TODO: Add error handling
+    return interpretInt(countAttempt);
 }

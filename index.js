@@ -77,7 +77,7 @@ async function handleMessage(message) {
     const countAttempt = message.content.split(/ +/)[0];
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-        // if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
+        // if (isValidInt(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
 
         const precedingNumber = await getPrecedingMessageNumber(client, message, storage.channelId, 1);
 
@@ -85,7 +85,7 @@ async function handleMessage(message) {
             storage.lastNumber = precedingNumber;
         }
 
-        if (isValidInt(countAttempt, storage.lastNumber + 1)) {
+        if (isValidInt(countAttempt) === storage.lastNumber + 1) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
             jsonfile.writeFileSync(path, storage);

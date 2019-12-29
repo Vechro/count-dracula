@@ -40,16 +40,17 @@ function unrestrictUser(client, guildId, channelId, userId) {
         console.error(err);
     }).catch(console.error);
 }
-// TODO: Refactor it into convertToBase10 for easy comparisons to lastNumber
-// TODO: eliminate edge cases and exploits as parseInt is super permissive
+
+/*
 function isValidInt(string, expectedInt) {
     if (parseInt(string, 10) === expectedInt) {
         return true;
-    }
-    else if (string === "0" || string === "1") {
+    } else if (string === "0" || string === "1") {
         return false;
-    }
-    else if (parseInt(string, 2) === expectedInt || roman.parseRoman(string) === expectedInt) {
+    // parseInt is lax with 0x but not with 0b so .substr() is necessary
+    } else if (string.startsWith("0b") && parseInt(string.substr(2), 2) == expectedInt) {
+        return true;
+    } else if (roman.parseRoman(string) === expectedInt) {
         return true;
     } else if (string.startsWith("0x") && parseInt(string, 16) === expectedInt) {
         return true;
@@ -57,8 +58,14 @@ function isValidInt(string, expectedInt) {
         return false;
     }
 }
+*/
 
-// Same as isValidInt but also returns the number in base-10 or null
+function isValidInt(input) { 
+    const interpreted = interpretInt(input);
+    return !isNaN(interpreted) && !Number.isNaN(input);
+}
+
+// Same as isValidInt but also returns the number in base-10 or NaN
 function interpretInt(string, addInt = 0) {
     console.log("string " + string + " / addint " + addInt);
 

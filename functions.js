@@ -59,18 +59,19 @@ function isValidInt(string, expectedInt) {
 }
 
 // Same as isValidInt but also returns the number in base-10 or null
-function interpretInt(string) {
-    console.log("string " + string);
+function interpretInt(string, addInt = 0) {
+    console.log("string " + string + " / addint " + addInt);
+
     if (parseInt(string, 10)) {
-        return parseInt(string, 10);
+        return parseInt(string, 10) + addInt;
     } else if (string === "0" || string === "1") {
         return null;
     } else if (string.startsWith("0b") && parseInt(string.substr(2), 2)) {
-        return parseInt(string.substr(2), 2);
+        return parseInt(string.substr(2), 2) + addInt;
     } else if (roman.parseRoman(string)) {
-        return roman.parseRoman(string);
+        return roman.parseRoman(string) + addInt;
     } else if (string.startsWith("0x") && parseInt(string, 16)) {
-        return parseInt(string, 16);
+        return parseInt(string, 16) + addInt;
     } else {
         return null;
     }
@@ -102,13 +103,13 @@ async function getPrecedingMessageNumber(client, message, channelId, limitAmount
             const editedMessages = precedingMessage.edits;
             const originalMessage = editedMessages[editedMessages.length - 1];
             const countAttempt = originalMessage.content.split(/ +/)[0];
-            return interpretInt(countAttempt);
+            return interpretInt(countAttempt, limitAmount - 1);
         } else {
             return getPrecedingMessageNumber(client, message, channelId, limitAmount + 1);
         }
     } else {
         const countAttempt = precedingMessage.content.split(/ +/)[0];
-        return interpretInt(countAttempt);
+        return interpretInt(countAttempt, limitAmount - 1);
     }
 }
 

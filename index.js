@@ -97,14 +97,14 @@ async function handleMessage(message) {
 
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.666 + Math.pow(fibonacci(user.banishments), 1.6), "hours");
+                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.67 + Math.pow(fibonacci(user.banishments), 3.3), "hours");
                     restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
 
                 } else {
                     storage.users.set(message.member.user.id, {
                         banishments: 1,
                         guildId: message.guild.id,
-                        unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.666, "hours"),
+                        unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
                     });
 
                     restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);

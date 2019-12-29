@@ -72,7 +72,7 @@ function interpretInt(string, addInt = 0) {
     if (parseInt(string, 10)) {
         return parseInt(string, 10) + addInt;
     } else if (string === "0" || string === "1") {
-        return null;
+        return NaN;
     } else if (string.startsWith("0b") && parseInt(string.substr(2), 2)) {
         return parseInt(string.substr(2), 2) + addInt;
     } else if (roman.parseRoman(string)) {
@@ -80,7 +80,7 @@ function interpretInt(string, addInt = 0) {
     } else if (string.startsWith("0x") && parseInt(string, 16)) {
         return parseInt(string, 16) + addInt;
     } else {
-        return null;
+        return NaN;
     }
 }
 

@@ -22,7 +22,7 @@ const storage = InitializeStorage(
         if (err) {
             console.log(err);
         }
-    }) : jsonfile.writeFileSync(path, data) || data
+    }) : jsonfile.writeFileSync(path, data) || data,
 );
 
 
@@ -79,15 +79,11 @@ async function handleMessage(message) {
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
         // if (isValidInt(countAttempt, storage.lastNumber + 1) && storage.lastUser !== message.member.user.id) {
 
-        const precedingNumber = await getPrecedingMessageNumber(client, message, storage.channelId);
-
-        console.log("0.5 " + storage.lastNumber);
+        const precedingNumber = await getPrecedingMessageNumber(client, message, storage.channelId, 1);
 
         if (precedingNumber !== storage.lastNumber) {
             storage.lastNumber = precedingNumber;
         }
-
-        console.log("1 " + storage.lastNumber);
 
         if (isValidInt(countAttempt, storage.lastNumber + 1)) {
             storage.lastNumber++;
@@ -122,14 +118,10 @@ async function handleMessage(message) {
             const randomFloat = getRandom(0.6, 0.8);
             const randomInt = getRandom(33, 49);
 
-            console.log("2 " + storage.lastNumber);
-
             let proposedNumber = storage.lastNumber * randomFloat;
             if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
                 proposedNumber = storage.lastNumber - randomInt;
             }
-
-            console.log("3 " + storage.lastNumber);
 
             message.channel.send(message.member + " messed up!");
             storage.lastNumber = Math.floor(proposedNumber);

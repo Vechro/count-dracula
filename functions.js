@@ -1,5 +1,6 @@
 const roman = require("romanjs");
 
+// Export most functions for use in index.js
 module.exports = {
     getRandom,
     restrictUser,
@@ -67,8 +68,6 @@ function isValidInt(input) {
 
 // Same as isValidInt but also returns the number in base-10 or NaN
 function interpretInt(string, addInt = 0) {
-    console.log("string " + string + " / addint " + addInt);
-
     if (parseInt(string, 10)) {
         return parseInt(string, 10) + addInt;
     } else if (string === "0" || string === "1") {
@@ -84,14 +83,8 @@ function interpretInt(string, addInt = 0) {
     }
 }
 
-/*
-// To be used as such, TODO: returns interpreted number which can be compared to refactored convertToBase10
-verifyPrecedingMessage(...).then(function (messages) {
-    console.log(`Received ${messages.size} messages`)
-}, console.error)
-*/
-// Supposed to fix editing
-// You should check if this function returns the same number as you provided it
+// TODO: returns interpreted number which can be compared to refactored convertToBase10
+// This takes care of deleted and edited messages
 async function getPrecedingMessageNumber(client, message, channelId, limitAmount) {
     const channel = getChannel(client, message.guild.id, channelId);
     // TODO: Ignore commands and bot if it's not a number
@@ -100,9 +93,10 @@ async function getPrecedingMessageNumber(client, message, channelId, limitAmount
         .then(messages => {
             return messages.sort((a, b) => a.createdAt > b.createdAt);
         });
-    
+
     const precedingMessage = sortedMessages.last();
 
+    // Checks if oldest message in Collection has been edited
     if (precedingMessage.editedTimestamp > 0) {
         // Unreliable, edits array tends to remain empty no matter what, keeping it around just in case
         if (precedingMessage._edits.length > 0) {
@@ -112,6 +106,7 @@ async function getPrecedingMessageNumber(client, message, channelId, limitAmount
             const countAttempt = originalMessage.content.split(/ +/)[0];
             return interpretInt(countAttempt, limitAmount - 1);
         } else {
+            // BRB = Bad Recursion BRB
             return getPrecedingMessageNumber(client, message, channelId, limitAmount + 1);
         }
     } else {

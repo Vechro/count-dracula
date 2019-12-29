@@ -12,3 +12,4 @@ Messing up will temporarily remove your right to count (by assigning you with a 
 * Add support for emoji numbers
 * https://github.com/finnfiddle/words-to-numbers (probably not happening)
 * Cap counting to `Number.MAX_SAFE_INT`
+* Command for changing rules

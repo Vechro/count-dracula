@@ -116,7 +116,7 @@ async function handleMessage(message) {
             storage.lastUser = 0;
 
             const randomFloat = getRandom(0.6, 0.8);
-            const randomInt = getRandom(33, 49);
+            const randomInt = getRandom(23, 49);
 
             let proposedNumber = storage.lastNumber * randomFloat;
             if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {

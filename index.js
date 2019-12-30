@@ -3,7 +3,7 @@ const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
 const moment = require("moment");
 const { prefix, token, path } = require("./config.json");
-const { getRandom, restrictUser, unrestrictUser, getPrecedingMessageNumber, isValidInt, fibonacci } = require("./functions");
+const { getRandom, setUserRestriction, getPrecedingMessageNumber, isValidInt, fibonacci } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -50,7 +50,7 @@ function pollUsers() {
     storage.users.forEach(function (user, id) {
         if (user.unbanDate < currentTime && user.unbanDate !== 0) {
             // Unban user
-            unrestrictUser(client, user.guildId, storage.channelId, id);
+            setUserRestriction(client, user.guildId, storage.channelId, id, null);
             user.unbanDate = 0;
 
         }
@@ -98,7 +98,7 @@ async function handleMessage(message) {
                     const user = storage.users.get(message.member.user.id);
                     user.banishments += 1;
                     user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3), "hours");
-                    restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
+                    setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
 
                 } else {
                     storage.users.set(message.member.user.id, {
@@ -107,7 +107,7 @@ async function handleMessage(message) {
                         unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
                     });
 
-                    restrictUser(client, message.guild.id, storage.channelId, message.member.user.id);
+                    setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
                 }
                 const unbanDate = storage.users.get(message.member.user.id).unbanDate;
                 message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);

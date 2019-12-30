@@ -3,8 +3,7 @@ const roman = require("romanjs");
 // Export most functions for use in index.js
 module.exports = {
     getRandom,
-    restrictUser,
-    unrestrictUser,
+    setUserRestriction,
     isValidInt,
     getPrecedingMessageNumber,
     fibonacci,
@@ -19,23 +18,12 @@ function getChannel(client, guildId, channelId) {
     return guild.channels.get(channelId);
 }
 
-function restrictUser(client, guildId, channelId, userId) {
+// State should be true, false or null (unset)
+function setUserRestriction(client, guildId, channelId, userId, state) {
     const guild = client.guilds.get(guildId);
     const channel = guild.channels.get(channelId);
     guild.fetchMember(userId).then((member) => {
-        channel.overwritePermissions(member.user, { "SEND_MESSAGES": false }, "Restrict access to the designated counting channel.");
-        console.log(`${userId} restricted from accessing channel`);
-    }, (err) => {
-        console.error(err);
-    }).catch(console.error);
-}
-
-// TODO: Consolidate these two functions into one
-function unrestrictUser(client, guildId, channelId, userId) {
-    const guild = client.guilds.get(guildId);
-    const channel = guild.channels.get(channelId);
-    guild.fetchMember(userId).then((member) => {
-        channel.overwritePermissions(member.user, { "SEND_MESSAGES": true }, "Restrict access to the designated counting channel.");
+        channel.overwritePermissions(member.user, { "SEND_MESSAGES": state }, "Restrict access to the designated counting channel.");
         console.log(`${userId} unrestricted from accessing channel`);
     }, (err) => {
         console.error(err);

@@ -4,9 +4,9 @@ const roman = require("romanjs");
 module.exports = {
     getRandom,
     setUserRestriction,
-    isValidInt,
     getPrecedingMessageNumber,
     fibonacci,
+    interpretInt,
 };
 
 function getRandom(min, max) {
@@ -30,12 +30,7 @@ function setUserRestriction(client, guildId, channelId, userId, state) {
     }).catch(console.error);
 }
 
-function isValidInt(input) { 
-    const interpreted = interpretInt(input);
-    return !isNaN(interpreted);
-}
-
-// Same as isValidInt but also returns the number in base-10 or NaN
+// Converts string from either base-10, binary, hex, roman and returns the number in base-10 or NaN
 function interpretInt(string, addInt = 0) {
     if (parseInt(string, 10)) {
         return parseInt(string, 10) + addInt;

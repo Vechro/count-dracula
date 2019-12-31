@@ -72,14 +72,25 @@ async function getOldestMessageNumber(client, message, channelId, limitAmount) {
             const editedMessages = oldestMessage.edits;
             const originalMessage = editedMessages[editedMessages.length - 1];
             const countAttempt = originalMessage.content.split(/ +/)[0];
-            return interpretInt(countAttempt, limitAmount - 1);
+            const interpreted = interpretInt(countAttempt, limitAmount - 1);
+            if (interpreted) {
+                return interpreted;
+            } else {
+                return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
+            }
         } else {
             // BRB = Bad Recursion BRB
+            // TODO: Could be optimized by passing in a new message.id
             return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
         }
     } else {
         const countAttempt = oldestMessage.content.split(/ +/)[0];
-        return interpretInt(countAttempt, limitAmount - 1);
+        const interpreted = interpretInt(countAttempt, limitAmount - 1);
+        if (interpreted) {
+            return interpreted;
+        } else {
+            return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
+        }
     }
 }
 

@@ -3,7 +3,7 @@ const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
 const moment = require("moment");
 const { prefix, token, path } = require("./config.json");
-const { getRandom, setUserRestriction, getOldestMessageNumber, fibonacci, interpretInt } = require("./functions");
+const { getRandom, setUserRestriction, getOldestMessageNumber, fibonacci, convertToBase10 } = require("./functions");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -77,7 +77,7 @@ async function handleMessage(message) {
     const countAttempt = message.content.split(/ +/)[0];
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-        // if (interpretInt(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
+        // if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
 
         const precedingNumber = await getOldestMessageNumber(client, message, storage.channelId, 1);
 
@@ -85,7 +85,7 @@ async function handleMessage(message) {
             storage.lastNumber = precedingNumber;
         }
 
-        if (interpretInt(countAttempt) === storage.lastNumber + 1) {
+        if (convertToBase10(countAttempt) === storage.lastNumber + 1) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
             jsonfile.writeFileSync(path, storage);

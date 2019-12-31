@@ -6,7 +6,7 @@ module.exports = {
     setUserRestriction,
     getOldestMessageNumber,
     fibonacci,
-    interpretInt,
+    convertToBase10,
 };
 
 function getRandom(min, max) {
@@ -35,7 +35,7 @@ function setUserRestriction(client, guildId, channelId, userId, state) {
 }
 
 // Converts string from either base-10, binary, hex, roman and returns the number in base-10 or NaN
-function interpretInt(string, addInt = 0) {
+function convertToBase10(string, addInt = 0) {
     if (parseInt(string, 10)) {
         return parseInt(string, 10) + addInt;
     } else if (string === "0" || string === "1") {
@@ -51,7 +51,6 @@ function interpretInt(string, addInt = 0) {
     }
 }
 
-// TODO: returns interpreted number which can be compared to refactored convertToBase10
 // This takes care of deleted and edited messages
 async function getOldestMessageNumber(client, message, channelId, limitAmount) {
     const channel = getChannel(client, message.guild.id, channelId);
@@ -72,7 +71,7 @@ async function getOldestMessageNumber(client, message, channelId, limitAmount) {
             const editedMessages = oldestMessage.edits;
             const originalMessage = editedMessages[editedMessages.length - 1];
             const countAttempt = originalMessage.content.split(/ +/)[0];
-            const interpreted = interpretInt(countAttempt, limitAmount - 1);
+            const interpreted = convertToBase10(countAttempt, limitAmount - 1);
             if (interpreted) {
                 return interpreted;
             } else {
@@ -85,7 +84,7 @@ async function getOldestMessageNumber(client, message, channelId, limitAmount) {
         }
     } else {
         const countAttempt = oldestMessage.content.split(/ +/)[0];
-        const interpreted = interpretInt(countAttempt, limitAmount - 1);
+        const interpreted = convertToBase10(countAttempt, limitAmount - 1);
         if (interpreted) {
             return interpreted;
         } else {

@@ -77,7 +77,6 @@ async function handleMessage(message) {
     const countAttempt = message.content.split(/ +/)[0];
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
-        // if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
 
         const precedingNumber = await getOldestMessageNumber(client, message, storage.channelId, 1);
 
@@ -85,7 +84,8 @@ async function handleMessage(message) {
             storage.lastNumber = precedingNumber;
         }
 
-        if (convertToBase10(countAttempt) === storage.lastNumber + 1) {
+        // Last half of this if-clause stops people from counting twice in a row
+        if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
             storage.lastNumber++;
             storage.lastUser = message.member.user.id;
             jsonfile.writeFileSync(path, storage);

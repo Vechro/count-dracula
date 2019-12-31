@@ -25,9 +25,9 @@ function setUserRestriction(client, guildId, channelId, userId, state) {
     guild.fetchMember(userId).then((member) => {
         channel.overwritePermissions(member.user, { "SEND_MESSAGES": state }, "Restrict access to the designated counting channel.");
         if (state === false) {
-            console.log(`${member.user.username} (${userId}) restricted from accessing channel`);
+            console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
         } else {
-            console.log(`${member.user.username} (${userId}) unrestricted from accessing channel`);
+            console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
         }
     }, (err) => {
         console.error(err);

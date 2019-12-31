@@ -4,7 +4,7 @@ const roman = require("romanjs");
 module.exports = {
     getRandom,
     setUserRestriction,
-    getPrecedingMessageNumber,
+    getOldestMessageNumber,
     fibonacci,
     interpretInt,
 };
@@ -53,7 +53,7 @@ function interpretInt(string, addInt = 0) {
 
 // TODO: returns interpreted number which can be compared to refactored convertToBase10
 // This takes care of deleted and edited messages
-async function getPrecedingMessageNumber(client, message, channelId, limitAmount) {
+async function getOldestMessageNumber(client, message, channelId, limitAmount) {
     const channel = getChannel(client, message.guild.id, channelId);
     // TODO: Ignore commands and bot if it's not a number
 
@@ -62,23 +62,23 @@ async function getPrecedingMessageNumber(client, message, channelId, limitAmount
             return messages.sort((a, b) => a.createdAt > b.createdAt);
         });
 
-    const precedingMessage = sortedMessages.last();
+    const oldestMessage = sortedMessages.last();
 
     // Checks if oldest message in Collection has been edited
-    if (precedingMessage.editedTimestamp > 0) {
+    if (oldestMessage.editedTimestamp > 0) {
         // Unreliable, edits array tends to remain empty no matter what, keeping it around just in case
-        if (precedingMessage._edits.length > 0) {
+        if (oldestMessage._edits.length > 0) {
             console.log("Preceding message has edits cache, finding oldest message...");
-            const editedMessages = precedingMessage.edits;
+            const editedMessages = oldestMessage.edits;
             const originalMessage = editedMessages[editedMessages.length - 1];
             const countAttempt = originalMessage.content.split(/ +/)[0];
             return interpretInt(countAttempt, limitAmount - 1);
         } else {
             // BRB = Bad Recursion BRB
-            return getPrecedingMessageNumber(client, message, channelId, limitAmount + 1);
+            return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
         }
     } else {
-        const countAttempt = precedingMessage.content.split(/ +/)[0];
+        const countAttempt = oldestMessage.content.split(/ +/)[0];
         return interpretInt(countAttempt, limitAmount - 1);
     }
 }

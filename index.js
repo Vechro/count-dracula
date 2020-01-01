@@ -86,7 +86,7 @@ async function handleMessage(message) {
 
         // Last half of this if-clause stops people from counting twice in a row
         if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
-            storage.lastNumber++;
+            storage.lastNumber += 1;
             storage.lastUser = message.member.user.id;
             jsonfile.writeFileSync(path, storage);
             return;

@@ -14,6 +14,9 @@ const data = {
     channelId: 0, // Snowflake/String
     lastNumber: 0, // Int
     lastUser: 0, // Snowflake/String
+    rules: {
+        allowConsecutiveCounting: false,
+    },
     users: [], // Map
 };
 // TODO: use fs.mkdirSync(path);
@@ -158,7 +161,7 @@ async function handleMessage(message) {
         command.execute(message, args, storage);
     } catch (error) {
         console.error(error);
-        message.reply("There was an error trying to execute that command!");
+        message.reply("there was an error trying to execute that command!");
     }
 }
 

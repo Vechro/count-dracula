@@ -6,7 +6,12 @@ module.exports = {
     description: "Start or stop counting.",
     execute(message, args, storage) {
         if (!storage.channelId) {
-            message.reply("There is no channel set up for counting.");
+            message.channel.send("There is no channel set up for counting.");
+            return;
+        }
+
+        if (!storage.channelId !== message.channel.id) {
+            message.channel.send("This channel isn't set up for counting.");
             return;
         }
 

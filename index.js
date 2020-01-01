@@ -76,7 +76,7 @@ async function handleMessage(message) {
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
 
-    if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot) {
+    if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot && storage.counting) {
 
         const precedingNumber = await getOldestMessageNumber(client, message, storage.channelId, 1);
 

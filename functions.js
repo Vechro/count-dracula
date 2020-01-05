@@ -85,7 +85,7 @@ async function getOldestMessageNumber(client, message, channelId, limitAmount) {
     } else {
         const countAttempt = oldestMessage.content.split(/ +/)[0];
         const interpreted = convertToBase10(countAttempt, limitAmount - 1);
-        if (interpreted) {
+        if (!isNaN(interpreted)) {
             return interpreted;
         } else {
             return getOldestMessageNumber(client, message, channelId, limitAmount + 1);

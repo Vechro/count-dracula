@@ -74,6 +74,12 @@ client.on("message", message => {
     });
 });
 
+client.on("messageDelete", message => {
+    handleMessageDelete(message).catch(function (err) {
+        console.warn(err);
+    });
+});
+
 async function handleMessage(message) {
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
@@ -163,6 +169,10 @@ async function handleMessage(message) {
         console.error(error);
         message.reply("there was an error trying to execute that command!");
     }
+}
+
+async function handleMessageDelete(message) {
+    
 }
 
 client.login(token);

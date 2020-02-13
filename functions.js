@@ -7,6 +7,8 @@ module.exports = {
     getOldestMessageNumber,
     fibonacci,
     convertToBase10,
+    convertSnowflake,
+    convertBinarySnowflakeToMs,
 };
 
 function getRandom(min, max) {
@@ -16,6 +18,31 @@ function getRandom(min, max) {
 function getChannel(client, guildId, channelId) {
     const guild = client.guilds.get(guildId);
     return guild.channels.get(channelId);
+}
+
+// TODO: Combine convertSnowflake and convertBinarySnowflakeToMs
+// Takes snowflake string and converts it to 64-bit binary, prepending 0s as necessary
+function convertSnowflake(snowflake) {
+    const decimal = parseInt(snowflake, 10);
+    let binary = decimal.toString(2);
+
+    const neededZeroes = 64 - binary.length;
+
+    for (let i = 0; i < neededZeroes; i++) {
+        binary = "0" + binary;
+    }
+    
+    return binary;
+}
+
+// Gets the first 42 bits from a 64-bit binary and converts it to base-10 milliseconds
+function convertBinarySnowflakeToMs(binary) {
+    const binarySubstring = binary.substr(0, 42);
+    
+    const binaryNumber = parseInt(binarySubstring, 2);
+    const decimal = binaryNumber.toString(10);
+
+    return decimal;
 }
 
 // State should be true, false or null (unset)
@@ -52,6 +79,7 @@ function convertToBase10(string, addInt = 0) {
 }
 
 // This takes care of deleted and edited messages
+// Line above is false, get rid of this whole function
 async function getOldestMessageNumber(client, message, channelId, limitAmount) {
     const channel = getChannel(client, message.guild.id, channelId);
     // TODO: Ignore commands and bot if it's not a number

@@ -1,9 +1,19 @@
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
+const { 
+    getRandom, 
+    setUserRestriction, 
+    getOldestMessageNumber, 
+    fibonacci, 
+    convertToBase10, 
+    convertSnowflake, 
+    convertBinarySnowflakeToMs,
+} = require("./functions");
 const moment = require("moment");
 const { prefix, token, path } = require("./config.json");
-const { getRandom, setUserRestriction, getOldestMessageNumber, fibonacci, convertToBase10 } = require("./functions");
+
+const util = require("util");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -87,6 +97,7 @@ async function handleMessage(message) {
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot && storage.counting) {
 
+        // TODO: Get rid of this
         const precedingNumber = await getOldestMessageNumber(client, message, storage.channelId, 1);
 
         if (precedingNumber !== storage.lastNumber) {
@@ -101,6 +112,7 @@ async function handleMessage(message) {
             return;
 
         } else {
+            // Ignores moderators from being punished by bot as it has no effect anyway
             if (!message.member.hasPermission("MANAGE_ROLES")) {
                 if (storage.users.has(message.member.user.id)) {
 
@@ -172,7 +184,18 @@ async function handleMessage(message) {
 }
 
 async function handleMessageDelete(message) {
-    
+    // TODO: Check if deleted message was last message in channel
+    console.log(util.inspect(message.id));
+    const binary = convertSnowflake(message.id);
+    const timeMs = convertBinarySnowflakeToMs(binary);
+    console.log(timeMs);
+    /*
+    if (message.channel.id == storage.channelId) {
+
+        let logs = await message.guild.fetchAuditLogs({ type: 72, before: message.id });
+        let entry = logs.entries.first();
+    }
+    */
 }
 
 client.login(token);

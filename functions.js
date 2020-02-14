@@ -7,8 +7,7 @@ module.exports = {
     getOldestMessageNumber,
     fibonacci,
     convertToBase10,
-    convertSnowflake,
-    convertBinarySnowflakeToMs,
+    generatePlusMinusOneSnowflakes,
 };
 
 function getRandom(min, max) {
@@ -20,9 +19,11 @@ function getChannel(client, guildId, channelId) {
     return guild.channels.get(channelId);
 }
 
-// TODO: Combine convertSnowflake and convertBinarySnowflakeToMs
 // Takes snowflake string and converts it to 64-bit binary, prepending 0s as necessary
-function convertSnowflake(snowflake) {
+// Takes the first 42 bits of it and converts it to time since epoch
+// Make two versions of the time, one with +1 ms and another with -1 ms
+// IT DOESN'T WORK
+function generatePlusMinusOneSnowflakes(snowflake) {
     const decimal = parseInt(snowflake, 10);
     let binary = decimal.toString(2);
 
@@ -31,18 +32,26 @@ function convertSnowflake(snowflake) {
     for (let i = 0; i < neededZeroes; i++) {
         binary = "0" + binary;
     }
-    
-    return binary;
-}
 
-// Gets the first 42 bits from a 64-bit binary and converts it to base-10 milliseconds
-function convertBinarySnowflakeToMs(binary) {
     const binarySubstring = binary.substr(0, 42);
     
     const binaryNumber = parseInt(binarySubstring, 2);
-    const decimal = binaryNumber.toString(10);
 
-    return decimal;
+    const decimalNew = binaryNumber.toString(10);
+
+    const timePlusMs = parseInt(decimalNew) + 1;
+    const timeMinusMs = parseInt(decimalNew) - 1;
+
+    const binaryPlus = timePlusMs.toString(2) + "0000100000000000000000";
+    const binaryMinus = timeMinusMs.toString(2) + "0000100000000000000000";
+
+    const snowflakedPlus = parseInt(binaryPlus, 2).toString(10);
+    const snowflakedMinus = parseInt(binaryMinus, 2).toString(10);
+
+    return {
+        plusOne: snowflakedPlus,
+        minusOne: snowflakedMinus,
+    };
 }
 
 // State should be true, false or null (unset)

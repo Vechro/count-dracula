@@ -7,8 +7,7 @@ const {
     getOldestMessageNumber, 
     fibonacci, 
     convertToBase10, 
-    convertSnowflake, 
-    convertBinarySnowflakeToMs,
+    generatePlusMinusOneSnowflakes,
 } = require("./functions");
 const moment = require("moment");
 const { prefix, token, path } = require("./config.json");
@@ -186,16 +185,16 @@ async function handleMessage(message) {
 async function handleMessageDelete(message) {
     // TODO: Check if deleted message was last message in channel
     console.log(util.inspect(message.id));
-    const binary = convertSnowflake(message.id);
-    const timeMs = convertBinarySnowflakeToMs(binary);
-    console.log(timeMs);
-    /*
+    
     if (message.channel.id == storage.channelId) {
 
-        let logs = await message.guild.fetchAuditLogs({ type: 72, before: message.id });
-        let entry = logs.entries.first();
+        const snowflakeTimes = generatePlusMinusOneSnowflakes(message.id);
+        const logs = await message.guild.fetchAuditLogs({ type: 72, before: snowflakeTimes.plusOne, after: snowflakeTimes.minusOne });
+        
+        // TODO: check if a log exists
+        const entry = logs.entries.first();
     }
-    */
+    
 }
 
 client.login(token);

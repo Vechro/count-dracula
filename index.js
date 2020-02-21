@@ -7,7 +7,6 @@ const {
     getOldestMessageNumber, 
     fibonacci, 
     convertToBase10, 
-    generatePlusMinusOneSnowflakes,
 } = require("./functions");
 const moment = require("moment");
 const { prefix, token, path } = require("./config.json");
@@ -184,14 +183,27 @@ async function handleMessage(message) {
 
 async function handleMessageDelete(message) {
     // TODO: Check if deleted message was last message in channel
-    console.log(util.inspect(message.id));
+
+    // Exact moment the event is received
+    // This is as good as it gets
+    const exactMoment = Date.now();
+
+    const snowflakeUtil = new Discord.SnowflakeUtil();
+
+    const momentBefore = snowflakeUtil.construct(exactMoment - 1000);
+    const momentAfter = snowflakeUtil.construct(exactMoment + 1);
+
+    console.log(util.inspect(message));
     
     if (message.channel.id == storage.channelId) {
 
-        const snowflakeTimes = generatePlusMinusOneSnowflakes(message.id);
-        const logs = await message.guild.fetchAuditLogs({ type: 72, before: snowflakeTimes.plusOne, after: snowflakeTimes.minusOne });
+        const logs = await message.guild.fetchAuditLogs({ type: 72, before: momentAfter, after: momentBefore });
         
-        // TODO: check if a log exists
+        // Check if there is exactly 1 log, probably works
+        if (logs.entries.length !== 1) {
+            // Handle ban
+
+        }
         const entry = logs.entries.first();
     }
     

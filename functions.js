@@ -7,7 +7,6 @@ module.exports = {
     getOldestMessageNumber,
     fibonacci,
     convertToBase10,
-    generatePlusMinusOneSnowflakes,
 };
 
 function getRandom(min, max) {
@@ -17,41 +16,6 @@ function getRandom(min, max) {
 function getChannel(client, guildId, channelId) {
     const guild = client.guilds.get(guildId);
     return guild.channels.get(channelId);
-}
-
-// Takes snowflake string and converts it to 64-bit binary, prepending 0s as necessary
-// Takes the first 42 bits of it and converts it to time since epoch
-// Make two versions of the time, one with +1 ms and another with -1 ms
-// IT DOESN'T WORK
-function generatePlusMinusOneSnowflakes(snowflake) {
-    const decimal = parseInt(snowflake, 10);
-    let binary = decimal.toString(2);
-
-    const neededZeroes = 64 - binary.length;
-
-    for (let i = 0; i < neededZeroes; i++) {
-        binary = "0" + binary;
-    }
-
-    const binarySubstring = binary.substr(0, 42);
-    
-    const binaryNumber = parseInt(binarySubstring, 2);
-
-    const decimalNew = binaryNumber.toString(10);
-
-    const timePlusMs = parseInt(decimalNew) + 1;
-    const timeMinusMs = parseInt(decimalNew) - 1;
-
-    const binaryPlus = timePlusMs.toString(2) + "0000100000000000000000";
-    const binaryMinus = timeMinusMs.toString(2) + "0000100000000000000000";
-
-    const snowflakedPlus = parseInt(binaryPlus, 2).toString(10);
-    const snowflakedMinus = parseInt(binaryMinus, 2).toString(10);
-
-    return {
-        plusOne: snowflakedPlus,
-        minusOne: snowflakedMinus,
-    };
 }
 
 // State should be true, false or null (unset)

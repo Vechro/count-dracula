@@ -4,7 +4,6 @@ const roman = require("romanjs");
 module.exports = {
     getRandom,
     setUserRestriction,
-    getOldestMessageNumber,
     fibonacci,
     convertToBase10,
 };
@@ -13,6 +12,8 @@ function getRandom(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+// Unused
+// Gets channel from channel id
 function getChannel(client, guildId, channelId) {
     const guild = client.guilds.get(guildId);
     return guild.channels.get(channelId);
@@ -48,49 +49,6 @@ function convertToBase10(string, addInt = 0) {
         return parseInt(string, 16) + addInt;
     } else {
         return NaN;
-    }
-}
-
-// This takes care of deleted and edited messages
-// Line above is false, get rid of this whole function
-async function getOldestMessageNumber(client, message, channelId, limitAmount) {
-    const channel = getChannel(client, message.guild.id, channelId);
-    // TODO: Ignore commands and bot if it's not a number
-
-    const sortedMessages = await channel.fetchMessages({ limit: limitAmount, before: message.id })
-        .then(messages => {
-            return messages.sort((a, b) => a.createdAt > b.createdAt);
-        });
-
-    const oldestMessage = sortedMessages.last();
-
-    // Checks if oldest message in Collection has been edited
-    if (oldestMessage.editedTimestamp > 0) {
-        // Unreliable, edits array tends to remain empty no matter what, keeping it around just in case
-        if (oldestMessage._edits.length > 0) {
-            console.log("Preceding message has edits cache, finding oldest message...");
-            const editedMessages = oldestMessage.edits;
-            const originalMessage = editedMessages[editedMessages.length - 1];
-            const countAttempt = originalMessage.content.split(/ +/)[0];
-            const interpreted = convertToBase10(countAttempt, limitAmount - 1);
-            if (!isNaN(interpreted)) {
-                return interpreted;
-            } else {
-                return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
-            }
-        } else {
-            // BRB = Bad Recursion BRB
-            // TODO: Could be optimized by passing in a new message.id
-            return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
-        }
-    } else {
-        const countAttempt = oldestMessage.content.split(/ +/)[0];
-        const interpreted = convertToBase10(countAttempt, limitAmount - 1);
-        if (!isNaN(interpreted)) {
-            return interpreted;
-        } else {
-            return getOldestMessageNumber(client, message, channelId, limitAmount + 1);
-        }
     }
 }
 

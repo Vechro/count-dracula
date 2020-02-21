@@ -4,7 +4,6 @@ const Discord = require("discord.js");
 const {
     getRandom,
     setUserRestriction,
-    getOldestMessageNumber,
     fibonacci,
     convertToBase10,
 } = require("./functions");
@@ -19,9 +18,10 @@ client.commands = new Discord.Collection();
 // Original structure of the JSON
 const data = {
     counting: true, // Bool
-    channelId: 0, // Snowflake/String
+    channelId: "", // Snowflake
     lastNumber: 0, // Int
-    lastUser: 0, // Snowflake/String
+    lastUserId: "", // Snowflake
+    lastMessageId: "", // Snowflake
     rules: {
         allowConsecutiveCounting: false,
     },
@@ -69,7 +69,7 @@ function pollUsers() {
 }
 
 // Move to functions.js
-function ban(client, message, storage) {
+function ban(client, message, storage, resetCount) {
     // Ignores moderators from being punished by bot as it has no effect anyway
     if (!message.member.hasPermission("MANAGE_ROLES")) {
         if (storage.users.has(message.member.user.id)) {
@@ -82,7 +82,6 @@ function ban(client, message, storage) {
         } else {
             storage.users.set(message.member.user.id, {
                 banishments: 1,
-                guildId: message.guild.id,
                 unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
             });
 
@@ -92,7 +91,12 @@ function ban(client, message, storage) {
         message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
     }
 
-    storage.lastUser = 0;
+    if (resetCount) {
+        jsonfile.writeFileSync(path, storage);
+        return;
+    }
+
+    storage.lastUserId = 0;
 
     const randomFloat = getRandom(0.6, 0.8);
     const randomInt = getRandom(23, 49);
@@ -135,17 +139,12 @@ async function handleMessage(message) {
 
     if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot && storage.counting) {
 
-        // TODO: Get rid of this
-        const precedingNumber = await getOldestMessageNumber(client, message, storage.channelId, 1);
-
-        if (precedingNumber !== storage.lastNumber) {
-            storage.lastNumber = precedingNumber;
-        }
+        storage.lastMessageId = message.id;
 
         // Last half of this if-clause stops people from counting twice in a row
-        if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUser !== message.member.user.id) {
+        if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUserId !== message.member.user.id) {
             storage.lastNumber += 1;
-            storage.lastUser = message.member.user.id;
+            storage.lastUserId = message.member.user.id;
             jsonfile.writeFileSync(path, storage);
             return;
 
@@ -186,11 +185,14 @@ async function handleMessage(message) {
 }
 
 async function handleMessageDelete(message) {
-    // TODO: Check if deleted message was last message in channel
 
     // Exact moment the event is received
     // This is as good as it gets
     const exactMoment = Date.now();
+
+    if (storage.lastMessageId !== message.id) {
+        return;
+    }
 
     const snowflakeUtil = new Discord.SnowflakeUtil();
 
@@ -206,10 +208,9 @@ async function handleMessageDelete(message) {
         // Check if there is exactly 1 log, probably works
         if (logs.entries.length !== 1) {
             // Handle ban
-            ban(client, message, storage);
+            ban(client, message, storage, false);
         }
     }
-
 }
 
 client.login(token);

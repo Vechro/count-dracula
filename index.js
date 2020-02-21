@@ -1,12 +1,12 @@
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
-const { 
-    getRandom, 
-    setUserRestriction, 
-    getOldestMessageNumber, 
-    fibonacci, 
-    convertToBase10, 
+const {
+    getRandom,
+    setUserRestriction,
+    getOldestMessageNumber,
+    fibonacci,
+    convertToBase10,
 } = require("./functions");
 const moment = require("moment");
 const { prefix, token, path } = require("./config.json");
@@ -68,6 +68,46 @@ function pollUsers() {
     });
 }
 
+// Move to functions.js
+function ban(client, message, storage) {
+    // Ignores moderators from being punished by bot as it has no effect anyway
+    if (!message.member.hasPermission("MANAGE_ROLES")) {
+        if (storage.users.has(message.member.user.id)) {
+
+            const user = storage.users.get(message.member.user.id);
+            user.banishments += 1;
+            user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3), "hours");
+            setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
+
+        } else {
+            storage.users.set(message.member.user.id, {
+                banishments: 1,
+                guildId: message.guild.id,
+                unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
+            });
+
+            setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
+        }
+        const unbanDate = storage.users.get(message.member.user.id).unbanDate;
+        message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
+    }
+
+    storage.lastUser = 0;
+
+    const randomFloat = getRandom(0.6, 0.8);
+    const randomInt = getRandom(23, 49);
+
+    let proposedNumber = storage.lastNumber * randomFloat;
+    if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
+        proposedNumber = storage.lastNumber - randomInt;
+    }
+
+    message.channel.send(message.member + " messed up!");
+    storage.lastNumber = Math.floor(proposedNumber);
+    message.channel.send(storage.lastNumber);
+    jsonfile.writeFileSync(path, storage);
+}
+
 setInterval(pollUsers, 60 * 60 * 1000);
 
 client.once("ready", () => {
@@ -110,43 +150,7 @@ async function handleMessage(message) {
             return;
 
         } else {
-            // Ignores moderators from being punished by bot as it has no effect anyway
-            if (!message.member.hasPermission("MANAGE_ROLES")) {
-                if (storage.users.has(message.member.user.id)) {
-
-                    const user = storage.users.get(message.member.user.id);
-                    user.banishments += 1;
-                    user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3), "hours");
-                    setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
-
-                } else {
-                    storage.users.set(message.member.user.id, {
-                        banishments: 1,
-                        guildId: message.guild.id,
-                        unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
-                    });
-
-                    setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
-                }
-                const unbanDate = storage.users.get(message.member.user.id).unbanDate;
-                message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
-            }
-
-            storage.lastUser = 0;
-
-            const randomFloat = getRandom(0.6, 0.8);
-            const randomInt = getRandom(23, 49);
-
-            let proposedNumber = storage.lastNumber * randomFloat;
-            if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
-                proposedNumber = storage.lastNumber - randomInt;
-            }
-
-            message.channel.send(message.member + " messed up!");
-            storage.lastNumber = Math.floor(proposedNumber);
-            message.channel.send(storage.lastNumber);
-            jsonfile.writeFileSync(path, storage);
-            return;
+            ban(client, message, storage);
         }
     }
 
@@ -194,19 +198,18 @@ async function handleMessageDelete(message) {
     const momentAfter = snowflakeUtil.construct(exactMoment + 1);
 
     console.log(util.inspect(message));
-    
+
     if (message.channel.id == storage.channelId) {
 
         const logs = await message.guild.fetchAuditLogs({ type: 72, before: momentAfter, after: momentBefore });
-        
+
         // Check if there is exactly 1 log, probably works
         if (logs.entries.length !== 1) {
             // Handle ban
-
+            ban(client, message, storage);
         }
-        const entry = logs.entries.first();
     }
-    
+
 }
 
 client.login(token);

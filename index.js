@@ -109,7 +109,7 @@ async function handleMessage(message) {
             return;
 
         } else {
-            ban(client, message, storage);
+            ban(client, message, storage, true);
         }
     }
 

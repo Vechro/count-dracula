@@ -19,7 +19,7 @@ module.exports = {
         // TODO: convert this to an actual channel
         if (storage.counting) {
             message.channel.send("Counting started!");
-            storage.lastUser = 0;
+            storage.lastUserId = 0;
             message.channel.send(storage.lastNumber);
         } else {
             message.channel.send("Counting stopped!");

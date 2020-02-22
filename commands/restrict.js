@@ -11,7 +11,7 @@ module.exports = {
     execute(message, args, storage) {
 
         if (args.length < 2 && !isNaN(convertToBase10(args[1]))) {
-            message.channel.reply("not enough arguments!");
+            message.user.reply("not enough arguments!");
             return;
         }
 

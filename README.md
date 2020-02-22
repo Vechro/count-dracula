@@ -6,10 +6,10 @@
 5. No breaking on purpose. If you do, you will get expelled from the channel.
 
 **Consequences**
-Messing up will temporarily remove your right to count (by assigning you with a role that removes your write access from #counting)
+
+Messing up will temporarily remove your right to count by modifying your permissions to remove your write access from #counting
 
 **Upcoming features**
-* Add support for emoji numbers
-* https://github.com/finnfiddle/words-to-numbers (probably not happening)
+* Add support for emoji numbers (probably not happening)
 * Cap counting to `Number.MAX_SAFE_INT`
 * Command for changing rules

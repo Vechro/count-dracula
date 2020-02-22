@@ -1,5 +1,3 @@
-const util = require("util");
-
 module.exports = {
     name: "debug",
     description: "Debug a user",
@@ -18,7 +16,7 @@ module.exports = {
         if (storageUser.length) {
             message.channel.send(storageUser);
         } else {
-            message.channel.send("Debug failed");
+            message.channel.send("No info available");
         }
         
     },

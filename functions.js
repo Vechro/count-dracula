@@ -15,9 +15,9 @@ function getRandom(min, max) {
 }
 
 // State should be true, false or null (unset)
-function setUserRestriction(client, guildId, channelId, userId, state) {
-    const guild = client.guilds.get(guildId);
-    const channel = guild.channels.get(channelId);
+function setUserRestriction(client, channelId, userId, state) {
+    const channel = client.channels.get(channelId);
+    const guild = channel.guild;
     guild.fetchMember(userId).then((member) => {
         channel.overwritePermissions(member.user, { "SEND_MESSAGES": state }, "Restrict access to the designated counting channel.");
         if (state === false) {
@@ -55,7 +55,7 @@ function ban(client, message, storage, rewind) {
             const user = storage.users.get(message.member.user.id);
             user.banishments += 1;
             user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3), "hours");
-            setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
+            setUserRestriction(client, storage.channelId, message.member.user.id, false);
 
         } else {
             storage.users.set(message.member.user.id, {
@@ -63,7 +63,7 @@ function ban(client, message, storage, rewind) {
                 unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
             });
 
-            setUserRestriction(client, message.guild.id, storage.channelId, message.member.user.id, false);
+            setUserRestriction(client, storage.channelId, message.member.user.id, false);
         }
         const unbanDate = storage.users.get(message.member.user.id).unbanDate;
         message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);

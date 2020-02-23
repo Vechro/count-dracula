@@ -56,10 +56,10 @@ function pollUsers() {
     const currentTime = moment();
 
     storage.users.forEach(function (user, id) {
-        if (user.unbanDate < currentTime && user.unbanDate !== 0) {
+        if (user.unbanDate < currentTime && user.unbanDate !== "0") {
             // Unban user
-            setUserRestriction(client, user.guildId, storage.channelId, id, null);
-            user.unbanDate = 0;
+            setUserRestriction(client, storage.channelId, id, null);
+            user.unbanDate = "0";
 
         }
     });

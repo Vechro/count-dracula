@@ -13,3 +13,4 @@ Messing up will temporarily remove your right to count by modifying your permiss
 * Add support for emoji numbers (probably not happening)
 * Cap counting to `Number.MAX_SAFE_INT`
 * Command for changing rules
+* Swap out Moment for Luxon

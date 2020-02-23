@@ -65,11 +65,12 @@ function pollUsers() {
     });
 }
 
-setInterval(pollUsers, 60 * 60 * 1000);
-
 client.once("ready", () => {
     // Poll asynchronously on launch
-    setTimeout(pollUsers, 0);
+    setTimeout(() => {
+        pollUsers();
+        setInterval(pollUsers, 60 * 60 * 1000);
+    }, 0);
     console.log("Ready!");
 });
 // TODO: resetting the count on command misuse

@@ -69,7 +69,7 @@ client.once("ready", () => {
     // Poll asynchronously on launch
     setTimeout(() => {
         pollUsers();
-        setInterval(pollUsers, 60 * 60 * 1000);
+        setInterval(pollUsers, 5 * 60 * 1000);
     }, 0);
     console.log("Ready!");
 });

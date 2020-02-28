@@ -1,18 +1,21 @@
 const jsonfile = require("jsonfile");
 const { path } = require("../config.json");
-const { unrestrictUser } = require("../functions");
+const { setUserRestriction } = require("../functions");
 
 module.exports = {
     name: "unrestrict",
     description: "Unrestrict user from counting.",
     aliases: ["unban"],
+    usage: "[user]",
     execute(message, args, storage) {
-        unrestrictUser(message.client, message.guild.id, storage.channelId, message.mentions.users.first().id);
+        setUserRestriction(message.client, storage.channelId, message.mentions.users.first().id, null);
 
-        const user = storage.users.get(message.mentions.users.first().id);
-        user.unbanDate = 0;
+        const storageUser = storage.users.get(message.mentions.users.first().id);
+        if (storageUser) {
+            storageUser.unbanDate = "0";
+        }
 
         jsonfile.writeFileSync(path, storage);
-        message.reply("unbanned!");
+        message.channel.send("User has been unbanned!");
     },
 };

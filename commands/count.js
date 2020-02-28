@@ -13,7 +13,7 @@ module.exports = {
 
         storage.counting = true;
         storage.lastNumber = parseInt(args[0], 10) || 0;
-        storage.lastUser = 0;
+        storage.lastUserId = 0;
 
         jsonfile.writeFileSync(path, storage);
         message.channel.send(storage.lastNumber);

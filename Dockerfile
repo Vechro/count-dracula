@@ -3,4 +3,5 @@ WORKDIR /count-dracula
 COPY package*.json ./
 RUN npm install
 COPY . .
+VOLUME [ "/data", "/config.json" ]
 CMD [ "npm", "start" ]

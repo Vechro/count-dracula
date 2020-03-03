@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { path } = require("../config.json");
+const { dataPath } = require("../config.json");
 
 module.exports = {
     name: "count",
@@ -15,7 +15,7 @@ module.exports = {
         storage.lastNumber = parseInt(args[0], 10) || 0;
         storage.lastUserId = 0;
 
-        jsonfile.writeFileSync(path, storage);
+        jsonfile.writeFile(dataPath, storage);
         message.channel.send(storage.lastNumber);
     },
 };

@@ -5,9 +5,10 @@ const {
     setUserRestriction,
     convertToBase10,
     ban,
+    createDirectories,
 } = require("./functions");
 const moment = require("moment");
-const { prefix, token, path } = require("./config.json");
+const { prefix, token, dataPath } = require("./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -24,15 +25,16 @@ const data = {
     },
     users: [], // Map
 };
-// TODO: use fs.mkdirSync(path);
+
+createDirectories(dataPath);
+
 const storage = InitializeStorage(
-    fs.existsSync(path) ? jsonfile.readFileSync(path, function (err) {
+    fs.existsSync(dataPath) ? jsonfile.readFileSync(dataPath, function (err) {
         if (err) {
             console.log(err);
         }
-    }) : jsonfile.writeFileSync(path, data) || data,
+    }) : jsonfile.writeFile(dataPath, data) || data,
 );
-
 
 function InitializeStorage(storage) {
     storage.users = new Map(storage.users);
@@ -106,7 +108,7 @@ async function handleMessage(message) {
         if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUserId !== message.member.user.id) {
             storage.lastNumber += 1;
             storage.lastUserId = message.member.user.id;
-            jsonfile.writeFileSync(path, storage);
+            jsonfile.writeFile(dataPath, storage);
             return;
 
         } else {

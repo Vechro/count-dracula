@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { path } = require("../config.json");
+const { dataPath } = require("../config.json");
 
 module.exports = {
     name: "rules",
@@ -12,6 +12,6 @@ module.exports = {
             return;
         }
 
-        jsonfile.writeFileSync(path, storage);
+        jsonfile.writeFile(dataPath, storage);
     },
 };

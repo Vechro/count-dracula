@@ -1,6 +1,6 @@
 const jsonfile = require("jsonfile");
 const moment = require("moment");
-const { path } = require("../config.json");
+const { dataPath } = require("../config.json");
 const { setUserRestriction, convertToBase10 } = require("../functions");
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
 
         }
 
-        jsonfile.writeFileSync(path, storage);
+        jsonfile.writeFile(dataPath, storage);
         message.channel.send("User has been banned!");
     },
 };

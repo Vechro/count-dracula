@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { path } = require("../config.json");
+const { dataPath } = require("../config.json");
 const { setUserRestriction } = require("../functions");
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
             storageUser.unbanDate = "0";
         }
 
-        jsonfile.writeFileSync(path, storage);
+        jsonfile.writeFile(dataPath, storage);
         message.channel.send("User has been unbanned!");
     },
 };

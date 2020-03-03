@@ -1,13 +1,17 @@
+const fs = require("fs");
+const path = require("path");
+
 const roman = require("romanjs");
 const jsonfile = require("jsonfile");
 const moment = require("moment");
-const { path } = require("./config.json");
+const { dataPath } = require("./config.json");
 
 // Export most functions for use in index.js
 module.exports = {
     setUserRestriction,
     convertToBase10,
     ban,
+    createDirectories,
 };
 
 function getRandom(min, max) {
@@ -71,7 +75,7 @@ function ban(client, message, storage, rewind) {
 
     if (!rewind) {
         storage.lastUserId = 0;
-        jsonfile.writeFileSync(path, storage);
+        jsonfile.writeFile(dataPath, storage);
         message.channel.send(message.member + " messed up!");
         message.channel.send(storage.lastNumber);
         return;
@@ -80,16 +84,16 @@ function ban(client, message, storage, rewind) {
 
         const randomFloat = getRandom(0.6, 0.8);
         const randomInt = getRandom(23, 49);
-    
+
         let proposedNumber = storage.lastNumber * randomFloat;
         if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
             proposedNumber = storage.lastNumber - randomInt;
         }
-    
+
         message.channel.send(message.member + " messed up!");
         storage.lastNumber = Math.floor(proposedNumber);
         message.channel.send(storage.lastNumber);
-        jsonfile.writeFileSync(path, storage);
+        jsonfile.writeFile(dataPath, storage);
     }
 }
 
@@ -105,4 +109,17 @@ function fibonacci(num) {
     }
 
     return b;
+}
+
+// Shoutout to bit-less at https://stackoverflow.com/a/54137611
+function createDirectories(pathname) {
+    const dirname = path.resolve();
+    pathname = pathname.replace(/^\.*\/|\/?[^/]+\.[a-z]+|\/$/g, ""); // Remove leading directory markers, and remove ending /file-name.extension
+    fs.mkdir(path.resolve(dirname, pathname), { recursive: true }, e => {
+        if (e) {
+            console.error(e);
+        } else {
+            console.log("dataPath created");
+        }
+    });
 }

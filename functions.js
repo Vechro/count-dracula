@@ -4,7 +4,7 @@ const path = require("path");
 const roman = require("romanjs");
 const jsonfile = require("jsonfile");
 const moment = require("moment");
-const { dataPath } = require("./config.json");
+const { dataPath } = require(process.env["DRACULA_CONFIG"] || "./config.json");
 
 // Export most functions for use in index.js
 module.exports = {

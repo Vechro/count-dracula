@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { dataPath } = require("../config.json");
+const { dataPath } = require(process.env["DRACULA_CONFIG"] || "../config.json");
 
 module.exports = {
     name: "togglecount",

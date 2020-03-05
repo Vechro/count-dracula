@@ -1,3 +1,4 @@
+console.log(process.env["DRACULA_CONFIG"]);
 const configPath = process.env["DRACULA_CONFIG"] || "./config.json";
 const fs = require("fs");
 const jsonfile = require("jsonfile");

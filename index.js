@@ -1,5 +1,3 @@
-console.log(process.env["DRACULA_CONFIG"]);
-const configPath = process.env["DRACULA_CONFIG"] || "./config.json";
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
@@ -10,7 +8,7 @@ const {
     createDirectories,
 } = require("./functions");
 const moment = require("moment");
-const { prefix, token, dataPath } = require(configPath);
+const { prefix, token, dataPath } = require(process.env["DRACULA_CONFIG"] || "./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();

@@ -1,6 +1,6 @@
 const jsonfile = require("jsonfile");
 const moment = require("moment");
-const { dataPath } = require("../config.json");
+const { dataPath } = require(process.env["DRACULA_CONFIG"] || "../config.json");
 const { setUserRestriction, convertToBase10 } = require("../functions");
 
 module.exports = {

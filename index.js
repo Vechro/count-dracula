@@ -1,4 +1,4 @@
-const configPath = process.env["DRACULA_CONFIG"] | "./config.json";
+const configPath = process.env["DRACULA_CONFIG"] || "./config.json";
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");

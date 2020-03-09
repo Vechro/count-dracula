@@ -1,18 +1,22 @@
 {
   "name": "count-dracula",
-  "version": "1.0.0",
-  "description": "Counting bot",
+  "description": "A counting bot for Discord",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "cross-env NODE_ENV=production node .",
+    "debug": "cross-env NODE_ENV=development node --inspect ."
   },
-  "author": "",
+  "author": "Vechro",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "@sguest/roman-js": "^1.0.1",
+    "discord.js": "^11.6.2",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "jsonfile": "^5.0.0",
-    "moment": "^2.24.0",
-    "romanjs": "git+https://git@github.com/Vechro/RomanJS.git"
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2"
   }
 }

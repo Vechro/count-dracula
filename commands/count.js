@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { dataPath } = require(process.env["DRACULA_CONFIG"] || "../config.json");
+
 
 module.exports = {
     name: "count",
@@ -15,7 +15,7 @@ module.exports = {
         storage.lastNumber = parseInt(args[0], 10) || 0;
         storage.lastUserId = 0;
 
-        jsonfile.writeFile(dataPath, storage);
+        jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send(storage.lastNumber);
     },
 };

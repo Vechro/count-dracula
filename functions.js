@@ -1,10 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 
-const roman = require("romanjs");
+const roman = require("@sguest/roman-js");
 const jsonfile = require("jsonfile");
 const moment = require("moment");
-const { dataPath } = require(process.env["DRACULA_CONFIG"] || "./config.json");
 
 // Export most functions for use in index.js
 module.exports = {
@@ -75,7 +74,7 @@ function ban(client, message, storage, rewind) {
 
     if (!rewind) {
         storage.lastUserId = 0;
-        jsonfile.writeFile(dataPath, storage);
+        jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send(message.member + " messed up!");
         message.channel.send(storage.lastNumber);
         return;
@@ -93,7 +92,7 @@ function ban(client, message, storage, rewind) {
         message.channel.send(message.member + " messed up!");
         storage.lastNumber = Math.floor(proposedNumber);
         message.channel.send(storage.lastNumber);
-        jsonfile.writeFile(dataPath, storage);
+        jsonfile.writeFile(process.env.DATA_PATH, storage);
     }
 }
 
@@ -119,7 +118,7 @@ function createDirectories(pathname) {
         if (e) {
             console.error(e);
         } else {
-            console.log("dataPath created");
+            console.log("process.env.DATA_PATH created");
         }
     });
 }

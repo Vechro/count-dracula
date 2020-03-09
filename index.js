@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
@@ -8,7 +10,6 @@ const {
     createDirectories,
 } = require("./functions");
 const moment = require("moment");
-const { prefix, token, dataPath } = require(process.env["DRACULA_CONFIG"] || "./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -26,14 +27,14 @@ const data = {
     users: [], // Map
 };
 
-createDirectories(dataPath);
+createDirectories(process.env.DATA_PATH);
 
 const storage = InitializeStorage(
-    fs.existsSync(dataPath) ? jsonfile.readFileSync(dataPath, function (err) {
+    fs.existsSync(process.env.DATA_PATH) ? jsonfile.readFileSync(process.env.DATA_PATH, function (err) {
         if (err) {
             console.log(err);
         }
-    }) : jsonfile.writeFile(dataPath, data) || data,
+    }) : jsonfile.writeFile(process.env.DATA_PATH, data) || data,
 );
 
 function InitializeStorage(storage) {
@@ -53,7 +54,7 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// This function will be called on an hourly basis to find anyone who should be unbanned
+// This function unbans anyone who should be unbanned according to their unbanDate
 function pollUsers() {
     const currentTime = moment();
 
@@ -75,6 +76,7 @@ client.once("ready", () => {
     }, 0);
     console.log("Ready!");
 });
+
 // TODO: resetting the count on command misuse
 client.on("message", message => {
     handleMessage(message).catch(function (err) {
@@ -96,11 +98,11 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
 });
 
 async function handleMessage(message) {
-    const args = message.content.slice(prefix.length).split(/ +/);
+    const args = message.content.slice(process.env.PREFIX.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
 
-    if (message.channel.id == storage.channelId && !message.content.startsWith(prefix) && !message.author.bot && storage.counting) {
+    if (message.channel.id == storage.channelId && !message.content.startsWith(process.env.PREFIX) && !message.author.bot && storage.counting) {
 
         storage.lastMessageId = message.id;
 
@@ -108,7 +110,7 @@ async function handleMessage(message) {
         if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUserId !== message.member.user.id) {
             storage.lastNumber += 1;
             storage.lastUserId = message.member.user.id;
-            jsonfile.writeFile(dataPath, storage);
+            jsonfile.writeFile(process.env.DATA_PATH, storage);
             return;
 
         } else {
@@ -116,7 +118,7 @@ async function handleMessage(message) {
         }
     }
 
-    if (!message.content.startsWith(prefix) || message.author.bot || message.channel.type !== "text") {
+    if (!message.content.startsWith(process.env.PREFIX) || message.author.bot || message.channel.type !== "text") {
         return;
     }
 
@@ -133,7 +135,7 @@ async function handleMessage(message) {
         let reply = `You didn't provide any arguments, ${message.author}!`;
 
         if (command.usage) {
-            reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+            reply += `\nThe proper usage would be: \`${process.env.PREFIX}${command.name} ${command.usage}\``;
         }
 
         return message.channel.send(reply);
@@ -159,7 +161,7 @@ async function handleMessageDelete(message) {
         return;
     }
 
-    if (message.content.startsWith(prefix) || message.author.bot || !storage.counting) {
+    if (message.content.startsWith(process.env.PREFIX) || message.author.bot || !storage.counting) {
         return;
     }
 
@@ -190,23 +192,16 @@ async function handleMessageUpdate(oldMessage, newMessage) {
         return;
     }
 
-    console.log("1");
-
-    if (oldMessage.content.startsWith(prefix) || oldMessage.author.bot || !storage.counting) {
+    if (oldMessage.content.startsWith(process.env.PREFIX) || oldMessage.author.bot || !storage.counting) {
         return;
     }
-
-    console.log("2");
 
     const oldCount = oldMessage.content.split(/ +/)[0];
     const newCount = newMessage.content.split(/ +/)[0];
 
     if (convertToBase10(oldCount) !== convertToBase10(newCount)) {
-        console.log("3");
         ban(client, oldMessage, storage, false);
     }
-
-
 }
 
-client.login(token);
+client.login(process.env.TOKEN);

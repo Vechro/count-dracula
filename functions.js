@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const roman = require("romanjs");
+const roman = require("@sguest/roman-js");
 const jsonfile = require("jsonfile");
 const moment = require("moment");
 const { dataPath } = require(process.env["DRACULA_CONFIG"] || "./config.json");

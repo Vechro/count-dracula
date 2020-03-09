@@ -9,10 +9,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "@sguest/roman-js": "^1.0.1",
+    "discord.js": "^11.6.2",
     "eslint": "^6.8.0",
     "jsonfile": "^5.0.0",
-    "moment": "^2.24.0",
-    "romanjs": "git+https://git@github.com/Vechro/RomanJS.git"
+    "moment": "^2.24.0"
   }
 }

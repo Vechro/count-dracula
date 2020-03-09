@@ -1,13 +1,12 @@
 {
   "name": "count-dracula",
-  "version": "1.0.0",
-  "description": "Counting bot",
+  "description": "A counting bot for Discord",
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node .",
     "debug": "cross-env NODE_ENV=development node --inspect ."
   },
-  "author": "",
+  "author": "Vechro",
   "license": "MIT",
   "dependencies": {
     "@sguest/roman-js": "^1.0.1",

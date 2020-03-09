@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { dataPath } = require(process.env["DRACULA_CONFIG"] || "../config.json");
+
 const { setUserRestriction } = require("../functions");
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
             storageUser.unbanDate = "0";
         }
 
-        jsonfile.writeFile(dataPath, storage);
+        jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send("User has been unbanned!");
     },
 };

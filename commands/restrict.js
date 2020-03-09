@@ -1,6 +1,6 @@
 const jsonfile = require("jsonfile");
 const moment = require("moment");
-const { dataPath } = require(process.env["DRACULA_CONFIG"] || "../config.json");
+
 const { setUserRestriction, convertToBase10 } = require("../functions");
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
 
         }
 
-        jsonfile.writeFile(dataPath, storage);
+        jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send("User has been banned!");
     },
 };

@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const { dataPath } = require(process.env["DRACULA_CONFIG"] || "../config.json");
+
 
 module.exports = {
     name: "rules",
@@ -12,6 +12,6 @@ module.exports = {
             return;
         }
 
-        jsonfile.writeFile(dataPath, storage);
+        jsonfile.writeFile(process.env.DATA_PATH, storage);
     },
 };

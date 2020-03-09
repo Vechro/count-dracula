@@ -11,6 +11,8 @@ module.exports = {
     convertToBase10,
     ban,
     createDirectories,
+    pollUsers,
+    initializeStorage,
 };
 
 function getRandom(min, max) {
@@ -31,6 +33,29 @@ function setUserRestriction(client, channelId, userId, state) {
     }, (err) => {
         console.error(err);
     }).catch(console.error);
+}
+
+// This function unbans anyone who should be unbanned according to their unbanDate
+function pollUsers(client, storage) {
+    const currentTime = moment();
+
+    storage.users.forEach(function (user, id) {
+        if (user.unbanDate < currentTime && user.unbanDate !== "0") {
+            // Unban user
+            setUserRestriction(client, storage.channelId, id, null);
+            user.unbanDate = "0";
+        }
+    });
+}
+
+function initializeStorage(storage) {
+    storage.users = new Map(storage.users);
+
+    storage.users.toJSON = function () {
+        return [...storage.users.entries()];
+    };
+
+    return storage;
 }
 
 // Converts string from either base-10, binary, hex, roman and returns the number in base-10 or NaN

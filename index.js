@@ -4,12 +4,12 @@ const fs = require("fs");
 const jsonfile = require("jsonfile");
 const Discord = require("discord.js");
 const {
-    setUserRestriction,
     convertToBase10,
     ban,
     createDirectories,
+    pollUsers,
+    initializeStorage,
 } = require("./functions");
-const moment = require("moment");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -29,23 +29,13 @@ const data = {
 
 createDirectories(process.env.DATA_PATH);
 
-const storage = InitializeStorage(
+const storage = initializeStorage(
     fs.existsSync(process.env.DATA_PATH) ? jsonfile.readFileSync(process.env.DATA_PATH, function (err) {
         if (err) {
             console.log(err);
         }
     }) : jsonfile.writeFile(process.env.DATA_PATH, data) || data,
 );
-
-function InitializeStorage(storage) {
-    storage.users = new Map(storage.users);
-
-    storage.users.toJSON = function () {
-        return [...storage.users.entries()];
-    };
-
-    return storage;
-}
 
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
@@ -54,24 +44,10 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// This function unbans anyone who should be unbanned according to their unbanDate
-function pollUsers() {
-    const currentTime = moment();
-
-    storage.users.forEach(function (user, id) {
-        if (user.unbanDate < currentTime && user.unbanDate !== "0") {
-            // Unban user
-            setUserRestriction(client, storage.channelId, id, null);
-            user.unbanDate = "0";
-
-        }
-    });
-}
-
 client.once("ready", () => {
     // Poll asynchronously on launch
     setTimeout(() => {
-        pollUsers();
+        pollUsers(client, storage);
         setInterval(pollUsers, 5 * 60 * 1000);
     }, 0);
     console.log("Ready!");

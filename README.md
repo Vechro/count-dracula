@@ -22,9 +22,3 @@
 ### Consequences
 
 Messing up will temporarily remove your right to count by modifying your permission to write in #counting
-
-## Upcoming features
-
-* Cap counting to `Number.MAX_SAFE_INT` and other JS limits
-* Command for changing rules
-* Swap out Moment for Luxon

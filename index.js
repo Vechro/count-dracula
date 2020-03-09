@@ -76,6 +76,7 @@ client.once("ready", () => {
     }, 0);
     console.log("Ready!");
 });
+
 // TODO: resetting the count on command misuse
 client.on("message", message => {
     handleMessage(message).catch(function (err) {
@@ -191,23 +192,16 @@ async function handleMessageUpdate(oldMessage, newMessage) {
         return;
     }
 
-    console.log("1");
-
     if (oldMessage.content.startsWith(process.env.PREFIX) || oldMessage.author.bot || !storage.counting) {
         return;
     }
-
-    console.log("2");
 
     const oldCount = oldMessage.content.split(/ +/)[0];
     const newCount = newMessage.content.split(/ +/)[0];
 
     if (convertToBase10(oldCount) !== convertToBase10(newCount)) {
-        console.log("3");
         ban(client, oldMessage, storage, false);
     }
-
-
 }
 
 client.login(process.env.TOKEN);

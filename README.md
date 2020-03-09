@@ -6,7 +6,6 @@
 2. The number has to be written in text in the base-10, binary (prefixed by "0b") or hexadecimal (prefixed by "0x") format. Both Arabic and Roman numerals are valid.
 3. Only one consecutive number per person.
 4. No editing/deleting. You may only edit your message if you do not change the number at the start of the message.
-5. No breaking on purpose. If you do, you will get expelled from the channel.
 
 **Consequences**
 

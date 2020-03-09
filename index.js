@@ -54,7 +54,7 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// This function will be called on an hourly basis to find anyone who should be unbanned
+// This function unbans anyone who should be unbanned according to their unbanDate
 function pollUsers() {
     const currentTime = moment();
 

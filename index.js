@@ -48,7 +48,8 @@ client.once("ready", () => {
     // Poll asynchronously on launch
     setTimeout(() => {
         pollUsers(client, storage);
-        setInterval(pollUsers, 5 * 60 * 1000);
+        // Poll every 10 minutes
+        setInterval(() => { pollUsers(client, storage); }, 10 * 60 * 1000);
     }, 0);
     console.log("Ready!");
 });

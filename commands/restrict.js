@@ -1,5 +1,5 @@
 const jsonfile = require("jsonfile");
-const moment = require("moment");
+const { DateTime } = require("luxon");
 
 const { setUserRestriction, convertToBase10 } = require("../functions");
 
@@ -28,11 +28,11 @@ module.exports = {
                 storageUser.unbanDate = "0";
             } else {
                 // TODO: allow user to specify time format (eg. hours, days)
-                storageUser.unbanDate = moment().add(mins, "minutes");
+                storageUser.unbanDate = DateTime.local().plus({ minutes: mins });
             }
         } else {
             storage.users.set(userId, {
-                unbanDate: moment().add(mins, "minutes"),
+                unbanDate: DateTime.local().plus({ minutes: mins }),
             });
 
         }

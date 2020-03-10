@@ -3,7 +3,7 @@ const path = require("path");
 
 const roman = require("@sguest/roman-js");
 const jsonfile = require("jsonfile");
-const moment = require("moment");
+const { DateTime } = require("luxon");
 
 // Export most functions for use in index.js
 module.exports = {
@@ -11,6 +11,8 @@ module.exports = {
     convertToBase10,
     ban,
     createDirectories,
+    pollUsers,
+    initializeStorage,
 };
 
 function getRandom(min, max) {
@@ -31,6 +33,29 @@ function setUserRestriction(client, channelId, userId, state) {
     }, (err) => {
         console.error(err);
     }).catch(console.error);
+}
+
+// This function unbans anyone who should be unbanned according to their unbanDate
+function pollUsers(client, storage) {
+    const currentTime = DateTime.local();
+
+    storage.users.forEach(function (user, id) {
+        if (user.unbanDate !== "0" && DateTime.fromISO(user.unbanDate) < currentTime) {
+            // Unban user
+            setUserRestriction(client, storage.channelId, id, null);
+            user.unbanDate = "0";
+        }
+    });
+}
+
+function initializeStorage(storage) {
+    storage.users = new Map(storage.users);
+
+    storage.users.toJSON = function () {
+        return [...storage.users.entries()];
+    };
+
+    return storage;
 }
 
 // Converts string from either base-10, binary, hex, roman and returns the number in base-10 or NaN
@@ -57,19 +82,19 @@ function ban(client, message, storage, rewind) {
 
             const user = storage.users.get(message.member.user.id);
             user.banishments += 1;
-            user.unbanDate = moment().add(Math.sqrt(storage.lastNumber) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3), "hours");
+            user.unbanDate = DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3) });
             setUserRestriction(client, storage.channelId, message.member.user.id, false);
 
         } else {
             storage.users.set(message.member.user.id, {
                 banishments: 1,
-                unbanDate: moment().add(Math.sqrt(storage.lastNumber) * 0.67, "hours"),
+                unbanDate: DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.67 }),
             });
 
             setUserRestriction(client, storage.channelId, message.member.user.id, false);
         }
         const unbanDate = storage.users.get(message.member.user.id).unbanDate;
-        message.member.send(`You will be unbanned from counting ${moment().to(unbanDate)}`);
+        message.member.send(`You will be unbanned from counting in ~${unbanDate.diff(DateTime.local(), "hours")}`);
     }
 
     if (!rewind) {
@@ -118,7 +143,7 @@ function createDirectories(pathname) {
         if (e) {
             console.error(e);
         } else {
-            console.log("process.env.DATA_PATH created");
+            console.log("DATA_PATH created/already exists");
         }
     });
 }

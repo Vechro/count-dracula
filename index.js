@@ -23,6 +23,10 @@ const data = {
     lastMessageId: "", // Snowflake
     rules: {
         allowConsecutiveCounting: false,
+        allowDec: true,
+        allowRoman: true,
+        allowHex: true,
+        allowBinary: true,
     },
     users: [], // Map
 };

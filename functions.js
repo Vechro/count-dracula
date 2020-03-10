@@ -9,14 +9,20 @@ const { DateTime } = require("luxon");
 module.exports = {
     setUserRestriction,
     convertToBase10,
-    ban,
+    banishUser,
     createDirectories,
     pollUsers,
     initializeStorage,
+    isValid,
 };
 
 function getRandom(min, max) {
     return Math.random() * (max - min) + min;
+}
+
+// Checks if an int is within safe bounds
+function isValid(value) {
+    return value < Number.MAX_SAFE_INTEGER && value > Number.MIN_SAFE_INTEGER;
 }
 
 // State should be true, false or null (unset)
@@ -75,7 +81,7 @@ function convertToBase10(string) {
     }
 }
 
-function ban(client, message, storage, rewind) {
+function banishUser(client, message, storage, rewind) {
     // Ignores moderators from being punished by bot as it has no effect anyway
     if (!message.member.hasPermission("MANAGE_ROLES")) {
         if (storage.users.has(message.member.user.id)) {
@@ -107,7 +113,7 @@ function ban(client, message, storage, rewind) {
         storage.lastUserId = 0;
 
         const randomFloat = getRandom(0.6, 0.8);
-        const randomInt = getRandom(23, 49);
+        const randomInt = getRandom(17, 37);
 
         let proposedNumber = storage.lastNumber * randomFloat;
         if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {

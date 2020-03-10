@@ -82,13 +82,13 @@ function ban(client, message, storage, rewind) {
 
             const user = storage.users.get(message.member.user.id);
             user.banishments += 1;
-            user.unbanDate = DateTime.local().plus({ hours: Math.sqrt(storage.lastNumber) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3) });
+            user.unbanDate = DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3) });
             setUserRestriction(client, storage.channelId, message.member.user.id, false);
 
         } else {
             storage.users.set(message.member.user.id, {
                 banishments: 1,
-                unbanDate: DateTime.local().plus({ hours: Math.sqrt(storage.lastNumber) * 0.67 }),
+                unbanDate: DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.67 }),
             });
 
             setUserRestriction(client, storage.channelId, message.member.user.id, false);

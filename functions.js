@@ -20,6 +20,15 @@ function getRandom(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+// Unused but useful
+// Gets channel from channel id
+/*
+function getChannel(client, guildId, channelId) {
+    const guild = client.guilds.get(guildId);
+    return guild.channels.get(channelId);
+}
+*/
+
 // Checks if an int is within safe bounds
 function isValid(value) {
     return value < Number.MAX_SAFE_INTEGER && value > Number.MIN_SAFE_INTEGER;

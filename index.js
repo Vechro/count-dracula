@@ -27,6 +27,8 @@ const data = {
         allowRoman: true,
         allowHex: true,
         allowBinary: true,
+        rewindOnBlunder: true,
+        banishOnBlunder: true,
     },
     users: [], // Map
 };

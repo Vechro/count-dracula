@@ -143,7 +143,7 @@ function createDirectories(pathname) {
         if (e) {
             console.error(e);
         } else {
-            console.log("process.env.DATA_PATH created");
+            console.log("DATA_PATH created/already exists");
         }
     });
 }

@@ -7,9 +7,9 @@ module.exports = {
     aliases: ["setchannel"],
     execute(message, args, storage) {
 
-        const optionalNumber = parseInt(args[1], 10);
+        const optionalNumber = args.length > 1 ? parseInt(args[1], 10) : null;
 
-        if (!isValid(optionalNumber)) {
+        if (optionalNumber !== null && !isValid(optionalNumber)) {
             message.channel.send("Number is invalid, please pick something more sensible");
             return;
         }
@@ -23,7 +23,10 @@ module.exports = {
 
         jsonfile.writeFile(process.env.DATA_PATH, storage);
 
-        message.channel.send(`Channel ${channel.id} set for counting`);
+        if (message.channel.id !== channel.id) {
+            message.channel.send(`Channel <#${channel.id}> set for counting`);
+        }
+
         channel.send("Channel set for counting");
         channel.send(storage.lastNumber);
     },

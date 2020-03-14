@@ -1,6 +1,6 @@
 const jsonfile = require("jsonfile");
 
-const { setUserRestriction } = require("../functions");
+const { restrictUser } = require("../functions");
 
 module.exports = {
     name: "unrestrict",
@@ -8,7 +8,7 @@ module.exports = {
     aliases: ["unban"],
     usage: "[user]",
     execute(message, args, storage) {
-        setUserRestriction(message.client, storage.channelId, message.mentions.users.first().id, null);
+        restrictUser(message.client, storage.channelId, message.mentions.users.first().id, false);
 
         const storageUser = storage.users.get(message.mentions.users.first().id);
         if (storageUser) {

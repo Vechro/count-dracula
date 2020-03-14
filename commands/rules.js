@@ -8,7 +8,7 @@ module.exports = {
     execute(message, args, storage) {
         console.log(args);
         if (!args.length) {
-            message.channel.send(JSON.stringify(storage.rules));
+            message.channel.send(JSON.stringify(storage.rules, null, 2));
             return;
         }
 

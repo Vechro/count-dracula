@@ -86,13 +86,13 @@ async function handleMessage(message) {
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
 
-    // Makes sure the number is within safe bounds
-    if (!isValid(countAttempt)) {
-        return;
-    }
-
     // Message has to match 
     if (message.channel.id == storage.channelId && !message.content.startsWith(process.env.PREFIX) && !message.author.bot && storage.counting) {
+
+        // Makes sure the number is within safe bounds
+        if (!isValid(countAttempt)) {
+            return;
+        }
 
         storage.lastMessageId = message.id;
 

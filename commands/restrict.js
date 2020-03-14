@@ -1,7 +1,7 @@
 const jsonfile = require("jsonfile");
 const { DateTime } = require("luxon");
 
-const { setUserRestriction, convertToBase10 } = require("../functions");
+const { restrictUser, convertToBase10 } = require("../functions");
 
 module.exports = {
     name: "restrict",
@@ -17,7 +17,7 @@ module.exports = {
 
         const userId = message.mentions.users.first().id;
 
-        setUserRestriction(message.client, storage.channelId, userId, false);
+        restrictUser(message.client, storage.channelId, userId, true);
 
         const storageUser = storage.users.get(userId);
 

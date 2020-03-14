@@ -10,7 +10,7 @@ module.exports = {
             return;
         }
 
-        if (!storage.channelId !== message.channel.id) {
+        if (storage.channelId !== message.channel.id) {
             message.channel.send("This channel isn't set up for counting.");
             return;
         }

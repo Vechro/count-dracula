@@ -7,7 +7,7 @@ const { DateTime } = require("luxon");
 
 // Export most functions for use in index.js
 module.exports = {
-    setUserRestriction,
+    restrictUser,
     convertToBase10,
     banishUser,
     createDirectories,
@@ -34,15 +34,22 @@ function isValid(value) {
     return value < Number.MAX_SAFE_INTEGER && value > Number.MIN_SAFE_INTEGER;
 }
 
-// State should be true, false or null (unset)
-function setUserRestriction(client, channelId, userId, state) {
-    const channel = client.channels.get(channelId);
+// State should be true to restrict, or false to unrestrict
+async function restrictUser(client, channelId, userId, state) {
+    const channel = await client.channels.fetch(channelId)
+        .then(value => { return value; })
+        .catch(console.error);
+
+    // const guild = client.guilds.resolve(channel);
     const guild = channel.guild;
-    guild.fetchMember(userId).then((member) => {
-        channel.overwritePermissions(member.user, { "SEND_MESSAGES": state }, "Restrict access to the designated counting channel.");
-        if (state === false) {
+
+    guild.members.fetch(userId).then((member) => {
+        if (state) {
+            channel.overwritePermissions([{ id: member.user, deny: ["SEND_MESSAGES"] }], "Restrict access to the designated counting channel.");
             console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
         } else {
+            // TODO: Make this delete permissionOverwrites for a user instead
+            channel.overwritePermissions([{ id: member.user, allow: ["SEND_MESSAGES"] }], "Restrict access to the designated counting channel.");
             console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
         }
     }, (err) => {
@@ -57,7 +64,7 @@ function pollUsers(client, storage) {
     storage.users.forEach(function (user, id) {
         if (user.unbanDate !== "0" && DateTime.fromISO(user.unbanDate) < currentTime) {
             // Unban user
-            setUserRestriction(client, storage.channelId, id, null);
+            restrictUser(client, storage.channelId, id, false);
             user.unbanDate = "0";
         }
     });
@@ -98,7 +105,7 @@ function banishUser(client, message, storage, rewind) {
             const user = storage.users.get(message.member.user.id);
             user.banishments += 1;
             user.unbanDate = DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.33 + Math.pow(fibonacci(user.banishments + 1), 3.3) });
-            setUserRestriction(client, storage.channelId, message.member.user.id, false);
+            restrictUser(client, storage.channelId, message.member.user.id, true);
 
         } else {
             storage.users.set(message.member.user.id, {
@@ -106,7 +113,7 @@ function banishUser(client, message, storage, rewind) {
                 unbanDate: DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.67 }),
             });
 
-            setUserRestriction(client, storage.channelId, message.member.user.id, false);
+            restrictUser(client, storage.channelId, message.member.user.id, true);
         }
         const unbanDate = storage.users.get(message.member.user.id).unbanDate;
         message.member.send(`You will be unbanned from counting in ~${unbanDate.diff(DateTime.local(), "hours")}`);

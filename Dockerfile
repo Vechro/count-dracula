@@ -3,4 +3,4 @@ WORKDIR /opt/count-dracula
 COPY package*.json ./
 RUN npm install
 COPY . .
-CMD [ "sh", "docker-entry.sh" ]
+CMD [ "npm", "start" ]

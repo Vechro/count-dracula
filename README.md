@@ -8,7 +8,7 @@
     ```
     PREFIX=<prefix that is required in front of commands>
     TOKEN=<your bot token from Discord>
-    DATA_PATH=</data/data.json">
+    DATA_PATH=</data/data.json>
     ```
 * Run `npm start`
 

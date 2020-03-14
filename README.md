@@ -6,9 +6,9 @@
 * Run `npm i` to install the dependencies
 * Create a `.env` in the root folder of the repo with your own values
     ```
-    PREFIX="<prefix that is required in front of commands, e.g. '!'>"
-    TOKEN="<your bot token from discord>"
-    DATA_PATH="</path/to/storage>.json"
+    PREFIX=<prefix that is required in front of commands>
+    TOKEN=<your bot token from Discord>
+    DATA_PATH=</data/data.json">
     ```
 * Run `npm start`
 

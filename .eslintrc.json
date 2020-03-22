@@ -1,5 +1,6 @@
 {
-	"extends": "eslint:recommended",
+	"extends": ["eslint:recommended", "plugin:promise/recommended"],
+	"plugins": ["github", "promise"],
 	"env": {
 		"node": true,
 		"es6": true
@@ -26,7 +27,7 @@
 		"no-var": "error",
 		"object-curly-spacing": ["error", "always"],
 		"prefer-const": "error",
-		"quotes": ["error", "double"],
+		"quotes": ["error", "single"],
 		"require-atomic-updates": "off",
 		"semi": ["error", "always"],
 		"space-before-blocks": "error",
@@ -39,6 +40,9 @@
 		"space-infix-ops": "error",
 		"space-unary-ops": "error",
 		"spaced-comment": "error",
-		"yoda": "error"
+		"yoda": "error",
+		"github/array-foreach": "error",
+		"promise/always-return": "off",
+		"eqeqeq": "error"
 	}
 }

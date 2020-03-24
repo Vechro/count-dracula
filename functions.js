@@ -118,7 +118,7 @@ function banishUser(client, message, storage, rewind) {
         const unbanDate = storage.users.get(message.member.user.id).unbanDate;
 
         const timeDifference = unbanDate.diffNow(['hours']).as('hours');
-        message.member.send(`You will be unbanned from counting in ~${Math.round(timeDifference * 10) / 10} hours`);
+        message.member.send(`You will be unbanned from counting in ~${timeDifference.toFixed(1)} hours`);
     }
 
     if (!rewind) {

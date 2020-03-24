@@ -1,9 +1,9 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const roman = require("@sguest/roman-js");
-const jsonfile = require("jsonfile");
-const { DateTime } = require("luxon");
+const roman = require('@sguest/roman-js');
+const jsonfile = require('jsonfile');
+const { DateTime } = require('luxon');
 
 // Export most functions for use in index.js
 module.exports = {
@@ -45,11 +45,11 @@ async function restrictUser(client, channelId, userId, state) {
 
     guild.members.fetch(userId).then((member) => {
         if (state) {
-            channel.overwritePermissions([{ id: member.user, deny: ["SEND_MESSAGES"] }], "Restrict access to the designated counting channel.");
+            channel.overwritePermissions([{ id: member.user, deny: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
             console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
         } else {
             // TODO: Make this delete permissionOverwrites for a user instead
-            channel.overwritePermissions([{ id: member.user, allow: ["SEND_MESSAGES"] }], "Restrict access to the designated counting channel.");
+            channel.overwritePermissions([{ id: member.user, allow: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
             console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
         }
     }, (err) => {
@@ -62,10 +62,10 @@ function pollUsers(client, storage) {
     const currentTime = DateTime.local();
 
     storage.users.forEach(function (user, id) {
-        if (user.unbanDate !== "0" && DateTime.fromISO(user.unbanDate) < currentTime) {
+        if (user.unbanDate !== '0' && DateTime.fromISO(user.unbanDate) < currentTime) {
             // Unban user
             restrictUser(client, storage.channelId, id, false);
-            user.unbanDate = "0";
+            user.unbanDate = '0';
         }
     });
 }
@@ -84,13 +84,13 @@ function initializeStorage(storage) {
 function convertToBase10(string) {
     if (parseInt(string, 10)) {
         return parseInt(string, 10);
-    } else if (string === "0" || string === "1") {
+    } else if (string === '0' || string === '1') {
         return NaN;
-    } else if (string.startsWith("0b") && parseInt(string.substr(2), 2)) {
+    } else if (string.startsWith('0b') && parseInt(string.substr(2), 2)) {
         return parseInt(string.substr(2), 2);
     } else if (roman.parseRoman(string)) {
         return roman.parseRoman(string);
-    } else if (string.startsWith("0x") && parseInt(string, 16)) {
+    } else if (string.startsWith('0x') && parseInt(string, 16)) {
         return parseInt(string, 16);
     } else {
         return NaN;
@@ -99,7 +99,7 @@ function convertToBase10(string) {
 
 function banishUser(client, message, storage, rewind) {
     // Ignores moderators from being punished by bot as it has no effect anyway
-    if (!message.member.hasPermission("MANAGE_ROLES")) {
+    if (!message.member.hasPermission('MANAGE_ROLES')) {
         if (storage.users.has(message.member.user.id)) {
 
             const user = storage.users.get(message.member.user.id);
@@ -116,13 +116,13 @@ function banishUser(client, message, storage, rewind) {
             restrictUser(client, storage.channelId, message.member.user.id, true);
         }
         const unbanDate = storage.users.get(message.member.user.id).unbanDate;
-        message.member.send(`You will be unbanned from counting in ~${unbanDate.diff(DateTime.local(), "hours")}`);
+        message.member.send(`You will be unbanned from counting in ~${unbanDate.diff(DateTime.local(), 'hours')}`);
     }
 
     if (!rewind) {
         storage.lastUserId = 0;
         jsonfile.writeFile(process.env.DATA_PATH, storage);
-        message.channel.send(message.member + " messed up!");
+        message.channel.send(message.member + ' messed up!');
         message.channel.send(storage.lastNumber);
         return;
     } else {
@@ -136,7 +136,7 @@ function banishUser(client, message, storage, rewind) {
             proposedNumber = storage.lastNumber - randomInt;
         }
 
-        message.channel.send(message.member + " messed up!");
+        message.channel.send(message.member + ' messed up!');
         storage.lastNumber = Math.floor(proposedNumber);
         message.channel.send(storage.lastNumber);
         jsonfile.writeFile(process.env.DATA_PATH, storage);
@@ -160,12 +160,12 @@ function fibonacci(num) {
 // Shoutout to bit-less at https://stackoverflow.com/a/54137611
 function createDirectories(pathname) {
     const dirname = path.resolve();
-    pathname = pathname.replace(/^\.*\/|\/?[^/]+\.[a-z]+|\/$/g, ""); // Remove leading directory markers, and remove ending /file-name.extension
+    pathname = pathname.replace(/^\.*\/|\/?[^/]+\.[a-z]+|\/$/g, ''); // Remove leading directory markers, and remove ending /file-name.extension
     fs.mkdir(path.resolve(dirname, pathname), { recursive: true }, e => {
         if (e) {
             console.error(e);
         } else {
-            console.log("DATA_PATH created/already exists");
+            console.log('DATA_PATH created/already exists');
         }
     });
 }

@@ -1,8 +1,8 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const fs = require("fs");
-const jsonfile = require("jsonfile");
-const Discord = require("discord.js");
+const fs = require('fs');
+const jsonfile = require('jsonfile');
+const Discord = require('discord.js');
 const {
     convertToBase10,
     banishUser,
@@ -10,7 +10,7 @@ const {
     pollUsers,
     initializeStorage,
     isValid,
-} = require("./functions");
+} = require('./functions');
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -18,10 +18,10 @@ client.commands = new Discord.Collection();
 // Original structure of the JSON
 const data = {
     counting: true, // Bool
-    channelId: "", // Snowflake
+    channelId: '', // Snowflake
     lastNumber: 0, // Int
-    lastUserId: "", // Snowflake
-    lastMessageId: "", // Snowflake
+    lastUserId: '', // Snowflake
+    lastMessageId: '', // Snowflake
     rules: {
         allowConsecutiveCounting: false,
         allowDec: true,
@@ -44,38 +44,38 @@ const storage = initializeStorage(
     }) : jsonfile.writeFile(process.env.DATA_PATH, data) || data,
 );
 
-const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
 
-client.once("ready", () => {
+client.once('ready', () => {
     // Poll asynchronously on launch
     setTimeout(() => {
         pollUsers(client, storage);
         // Poll every 10 minutes
         setInterval(() => { pollUsers(client, storage); }, 10 * 60 * 1000);
     }, 0);
-    console.log("Ready!");
+    console.log('Ready!');
 });
 
 // TODO: resetting the count on command misuse
-client.on("message", message => {
+client.on('message', message => {
     handleMessage(message).catch(function (err) {
         console.warn(err);
     });
 });
 
-client.on("messageDelete", message => {
+client.on('messageDelete', message => {
     handleMessageDelete(message).catch(function (err) {
         console.warn(err);
     });
 });
 
 // This handles message edits
-client.on("messageUpdate", (oldMessage, newMessage) => {
+client.on('messageUpdate', (oldMessage, newMessage) => {
     handleMessageUpdate(oldMessage, newMessage).catch(function (err) {
         console.warn(err);
     });
@@ -87,7 +87,7 @@ async function handleMessage(message) {
     const countAttempt = message.content.split(/ +/)[0];
 
     // Message has to match 
-    if (message.channel.id == storage.channelId && !message.content.startsWith(process.env.PREFIX) && !message.author.bot && storage.counting) {
+    if (message.channel.id === storage.channelId && !message.content.startsWith(process.env.PREFIX) && !message.author.bot && storage.counting) {
 
         // Makes sure the number is within safe bounds
         if (!isValid(countAttempt)) {
@@ -111,13 +111,13 @@ async function handleMessage(message) {
     // Return if message starts with prefix
     // or if the message is authored by a bot
     // or if the channel type isn't text (probably unnecessary)
-    if (!message.content.startsWith(process.env.PREFIX) || message.author.bot || message.channel.type !== "text") {
+    if (!message.content.startsWith(process.env.PREFIX) || message.author.bot || message.channel.type !== 'text') {
         return;
     }
 
     // This checks for whether the user who used the prefix in front of their message actually has permission to use said command
     // TODO: Banish user for attempted misuse of power
-    if (!message.member.hasPermission("MANAGE_ROLES")) {
+    if (!message.member.hasPermission('MANAGE_ROLES')) {
         return;
     }
 
@@ -140,7 +140,7 @@ async function handleMessage(message) {
         command.execute(message, args, storage);
     } catch (error) {
         console.error(error);
-        message.reply("there was an error trying to execute that command!");
+        message.reply('there was an error trying to execute that command!');
     }
 }
 
@@ -150,7 +150,7 @@ async function handleMessageDelete(message) {
     // This is as good as it gets
     const exactMoment = Date.now();
 
-    console.log("Message deletion spotted!");
+    console.log('Message deletion spotted!');
 
     if (storage.lastMessageId !== message.id || message.channel.id !== storage.channelId) {
         return;
@@ -165,7 +165,7 @@ async function handleMessageDelete(message) {
     const momentBefore = snowflakeUtil.generate(exactMoment - 1000);
     const momentAfter = snowflakeUtil.generate(exactMoment + 1);
 
-    if (!message.member.hasPermission("MANAGE_ROLES")) {
+    if (!message.member.hasPermission('MANAGE_ROLES')) {
 
         const logs = await message.guild.fetchAuditLogs({ type: 72, before: momentAfter, after: momentBefore });
 
@@ -175,13 +175,13 @@ async function handleMessageDelete(message) {
             banishUser(client, message, storage, false);
         }
     } else {
-        console.log("Ignoring due to high permissions of deleter or channel mismatch");
+        console.log('Ignoring due to high permissions of deleter or channel mismatch');
     }
 }
 
 async function handleMessageUpdate(oldMessage, newMessage) {
 
-    console.log("Message edit spotted!");
+    console.log('Message edit spotted!');
 
     // Ignore edit if the edited message isn't the last message in the channel
     // or if the edited message is in a different channel

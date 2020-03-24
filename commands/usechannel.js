@@ -1,16 +1,16 @@
-const jsonfile = require("jsonfile");
-const { isValid } = require("../functions");
+const jsonfile = require('jsonfile');
+const { isValid } = require('../functions');
 
 module.exports = {
-    name: "usechannel",
-    description: "Specify a channel to be used for counting.",
-    aliases: ["setchannel"],
+    name: 'usechannel',
+    description: 'Specify a channel to be used for counting.',
+    aliases: ['setchannel'],
     execute(message, args, storage) {
 
         const optionalNumber = args.length > 1 ? parseInt(args[1], 10) : null;
 
         if (optionalNumber !== null && !isValid(optionalNumber)) {
-            message.channel.send("Number is invalid, please pick something more sensible");
+            message.channel.send('Number is invalid, please pick something more sensible');
             return;
         }
 
@@ -27,7 +27,7 @@ module.exports = {
             message.channel.send(`Channel <#${channel.id}> set for counting`);
         }
 
-        channel.send("Channel set for counting");
+        channel.send('Channel set for counting');
         channel.send(storage.lastNumber);
     },
 };

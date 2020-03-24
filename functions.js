@@ -61,13 +61,13 @@ async function restrictUser(client, channelId, userId, state) {
 function pollUsers(client, storage) {
     const currentTime = DateTime.local();
 
-    storage.users.forEach(function (user, id) {
+    for (const [user, id] of storage.users) {
         if (user.unbanDate !== '0' && DateTime.fromISO(user.unbanDate) < currentTime) {
             // Unban user
             restrictUser(client, storage.channelId, id, false);
             user.unbanDate = '0';
         }
-    });
+    }
 }
 
 function initializeStorage(storage) {

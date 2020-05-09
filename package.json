@@ -12,13 +12,16 @@
     "@sguest/roman-js": "^1.0.1",
     "discord.js": "^12.0.2",
     "dotenv": "^8.2.0",
-    "eslint": "^6.8.0",
     "jsonfile": "^5.0.0",
     "luxon": "^1.22.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",
+    "eslint": "^6.8.0",
     "eslint-plugin-github": "^3.4.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-json": "^2.1.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1"
   }
 }

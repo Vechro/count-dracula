@@ -13,5 +13,5 @@ module.exports = {
         }
 
         jsonfile.writeFile(process.env.DATA_PATH, storage);
-    },
+    }
 };

@@ -1,7 +1,6 @@
 const jsonfile = require('jsonfile');
 const { isValid } = require('../functions');
 
-
 module.exports = {
     name: 'count',
     description: 'Start count at a specified number.',
@@ -25,5 +24,5 @@ module.exports = {
 
         jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send(storage.lastNumber);
-    },
+    }
 };

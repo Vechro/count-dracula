@@ -19,7 +19,6 @@ module.exports = {
             message.channel.send('Unable to interpret rule state');
             return;
         }
-        
 
         const knownRules = Object.keys(storage.rules);
 
@@ -32,5 +31,5 @@ module.exports = {
 
         jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send('Rule changed');
-    },
+    }
 };

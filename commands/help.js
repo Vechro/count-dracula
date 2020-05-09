@@ -29,5 +29,5 @@ module.exports = {
         if (command.usage) data.push(`**Usage:** ${process.env.PREFIX}${command.name} ${command.usage}`);
 
         message.channel.send(data, { split: true });
-    },
+    }
 };

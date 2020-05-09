@@ -31,13 +31,10 @@ module.exports = {
                 storageUser.unbanDate = DateTime.local().plus({ minutes: mins });
             }
         } else {
-            storage.users.set(userId, {
-                unbanDate: DateTime.local().plus({ minutes: mins }),
-            });
-
+            storage.users.set(userId, {unbanDate: DateTime.local().plus({ minutes: mins })});
         }
 
         jsonfile.writeFile(process.env.DATA_PATH, storage);
         message.channel.send('User has been banned!');
-    },
+    }
 };

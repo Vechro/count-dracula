@@ -1,6 +1,5 @@
 const jsonfile = require('jsonfile');
 
-
 module.exports = {
     name: 'togglecount',
     description: 'Start or stop counting.',
@@ -26,5 +25,5 @@ module.exports = {
         }
 
         jsonfile.writeFile(process.env.DATA_PATH, storage);
-    },
+    }
 };

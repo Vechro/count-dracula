@@ -29,5 +29,5 @@ module.exports = {
 
         channel.send('Channel set for counting');
         channel.send(storage.lastNumber);
-    },
+    }
 };

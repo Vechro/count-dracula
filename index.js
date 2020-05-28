@@ -9,7 +9,7 @@ const {
     createDirectories,
     pollUsers,
     initializeStorage,
-    isValid,
+    isValid
 } = require('./functions');
 
 const client = new Discord.Client();
@@ -29,19 +29,19 @@ const data = {
         allowHex: true,
         allowBinary: true,
         rewindOnBlunder: true,
-        banishOnBlunder: true,
+        banishOnBlunder: true
     },
-    users: [], // Map
+    users: [] // Map
 };
 
 createDirectories(process.env.DATA_PATH);
 
 const storage = initializeStorage(
-    fs.existsSync(process.env.DATA_PATH) ? jsonfile.readFileSync(process.env.DATA_PATH, function (err) {
+    fs.existsSync(process.env.DATA_PATH) ? jsonfile.readFileSync(process.env.DATA_PATH, err => {
         if (err) {
             console.log(err);
         }
-    }) : jsonfile.writeFile(process.env.DATA_PATH, data) || data,
+    }) : jsonfile.writeFile(process.env.DATA_PATH, data) || data
 );
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -56,37 +56,37 @@ client.once('ready', () => {
     setTimeout(() => {
         pollUsers(client, storage);
         // Poll every 10 minutes
-        setInterval(() => { pollUsers(client, storage); }, 10 * 60 * 1000);
+        setInterval(() => pollUsers(client, storage), 10 * 60 * 1000);
     }, 0);
     console.log('Ready!');
 });
 
 // TODO: resetting the count on command misuse
 client.on('message', message => {
-    handleMessage(message).catch(function (err) {
+    handleMessage(message).catch(err => {
         console.warn(err);
     });
 });
 
 client.on('messageDelete', message => {
-    handleMessageDelete(message).catch(function (err) {
+    handleMessageDelete(message).catch(err => {
         console.warn(err);
     });
 });
 
 // This handles message edits
 client.on('messageUpdate', (oldMessage, newMessage) => {
-    handleMessageUpdate(oldMessage, newMessage).catch(function (err) {
+    handleMessageUpdate(oldMessage, newMessage).catch(err => {
         console.warn(err);
     });
 });
 
-async function handleMessage(message) {
+function handleMessage(message) {
     const args = message.content.slice(process.env.PREFIX.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
     const countAttempt = message.content.split(/ +/)[0];
 
-    // Message has to match 
+    // Message has to match
     if (message.channel.id === storage.channelId && !message.content.startsWith(process.env.PREFIX) && !message.author.bot && storage.counting) {
 
         // Makes sure the number is within safe bounds
@@ -103,9 +103,9 @@ async function handleMessage(message) {
             jsonfile.writeFile(process.env.DATA_PATH, storage);
             return;
 
-        } else {
-            banishUser(client, message, storage, true);
         }
+        banishUser(client, message, storage, true);
+
     }
 
     // Return if message starts with prefix
@@ -121,8 +121,8 @@ async function handleMessage(message) {
         return;
     }
 
-    const command = client.commands.get(commandName)
-        || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    const command = client.commands.get(commandName) ||
+        client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
     if (!command) return;
 
@@ -133,7 +133,8 @@ async function handleMessage(message) {
             reply += `\nThe proper usage would be: \`${process.env.PREFIX}${command.name} ${command.usage}\``;
         }
 
-        return message.channel.send(reply);
+        message.channel.send(reply);
+        return;
     }
 
     try {
@@ -179,7 +180,7 @@ async function handleMessageDelete(message) {
     }
 }
 
-async function handleMessageUpdate(oldMessage, newMessage) {
+function handleMessageUpdate(oldMessage, newMessage) {
 
     console.log('Message edit spotted!');
 

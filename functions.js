@@ -13,7 +13,7 @@ module.exports = {
     createDirectories,
     pollUsers,
     initializeStorage,
-    isValid,
+    isValid
 };
 
 function getRandom(min, max) {
@@ -37,24 +37,23 @@ function isValid(value) {
 // State should be true to restrict, or false to unrestrict
 async function restrictUser(client, channelId, userId, state) {
     const channel = await client.channels.fetch(channelId)
-        .then(value => { return value; })
         .catch(console.error);
 
     // const guild = client.guilds.resolve(channel);
     const guild = channel.guild;
 
-    guild.members.fetch(userId).then((member) => {
-        if (state) {
-            channel.overwritePermissions([{ id: member.user, deny: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
-            console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
-        } else {
+    guild.members.fetch(userId)
+        .then(member => {
+            if (state) {
+                channel.overwritePermissions([{ id: member.user, deny: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
+                console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
+            } else {
             // TODO: Make this delete permissionOverwrites for a user instead
-            channel.overwritePermissions([{ id: member.user, allow: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
-            console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
-        }
-    }, (err) => {
-        console.error(err);
-    }).catch(console.error);
+                channel.overwritePermissions([{ id: member.user, allow: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
+                console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
+            }
+        })
+        .catch(console.error);
 }
 
 // This function unbans anyone who should be unbanned according to their unbanDate
@@ -92,9 +91,9 @@ function convertToBase10(string) {
         return roman.parseRoman(string);
     } else if (string.startsWith('0x') && parseInt(string, 16)) {
         return parseInt(string, 16);
-    } else {
-        return NaN;
     }
+    return NaN;
+
 }
 
 function banishUser(client, message, storage, rewind) {
@@ -110,7 +109,7 @@ function banishUser(client, message, storage, rewind) {
         } else {
             storage.users.set(message.member.user.id, {
                 banishments: 1,
-                unbanDate: DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.67 }),
+                unbanDate: DateTime.local().plus({ hours: Math.sqrt(Math.abs(storage.lastNumber)) * 0.67 })
             });
 
             restrictUser(client, storage.channelId, message.member.user.id, true);
@@ -124,25 +123,24 @@ function banishUser(client, message, storage, rewind) {
     if (!rewind) {
         storage.lastUserId = 0;
         jsonfile.writeFile(process.env.DATA_PATH, storage);
-        message.channel.send(message.member + ' messed up!');
+        message.channel.send(`${message.member} messed up!`);
         message.channel.send(storage.lastNumber);
         return;
-    } else {
-        storage.lastUserId = 0;
-
-        const randomFloat = getRandom(0.6, 0.8);
-        const randomInt = getRandom(17, 37);
-
-        let proposedNumber = storage.lastNumber * randomFloat;
-        if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
-            proposedNumber = storage.lastNumber - randomInt;
-        }
-
-        message.channel.send(message.member + ' messed up!');
-        storage.lastNumber = Math.floor(proposedNumber);
-        message.channel.send(storage.lastNumber);
-        jsonfile.writeFile(process.env.DATA_PATH, storage);
     }
+    storage.lastUserId = 0;
+
+    const randomFloat = getRandom(0.6, 0.8);
+    const randomInt = getRandom(17, 37);
+
+    let proposedNumber = storage.lastNumber * randomFloat;
+    if (storage.lastNumber - proposedNumber > randomInt && proposedNumber - randomInt > 0) {
+        proposedNumber = storage.lastNumber - randomInt;
+    }
+
+    message.channel.send(`${message.member} messed up!`);
+    storage.lastNumber = Math.floor(proposedNumber);
+    message.channel.send(storage.lastNumber);
+    jsonfile.writeFile(process.env.DATA_PATH, storage);
 }
 
 // Fibonacci used for calculating ban times from counting
@@ -151,7 +149,7 @@ function fibonacci(num) {
 
     while (num >= 0) {
         temp = a;
-        a = a + b;
+        a += b;
         b = temp;
         num--;
     }

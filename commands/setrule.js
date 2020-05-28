@@ -7,6 +7,11 @@ module.exports = {
     usage: '<rule name> <true | false>',
     execute(message, args, storage) {
 
+        if (args.length < 2) {
+            message.reply('not enough arguments!');
+            return;
+        }
+
         const ruleName = args[0];
         const ruleStatus = args[1];
         let derivedBoolean;

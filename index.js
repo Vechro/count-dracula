@@ -22,7 +22,7 @@ const data = {
     lastNumber: 0, // Int
     lastUserId: '', // Snowflake
     lastMessageId: '', // Snowflake
-    rules: {
+    rules: { // TODO: this isn't being created for some reason
         allowConsecutiveCounting: false,
         allowDec: true,
         allowRoman: true,
@@ -63,9 +63,11 @@ client.once('ready', () => {
 
 // TODO: resetting the count on command misuse
 client.on('message', message => {
-    handleMessage(message).catch(err => {
-        console.warn(err);
-    });
+    try {
+        handleMessage(message);
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 client.on('messageDelete', message => {

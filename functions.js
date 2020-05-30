@@ -49,7 +49,7 @@ async function restrictUser(client, channelId, userId, state) {
                 console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
             } else {
             // TODO: Make this delete permissionOverwrites for a user instead
-                channel.overwritePermissions([{ id: member.user, allow: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
+                channel.overwritePermissions([{ id: member.user, allow: ['SEND_MESSAGES'] }], 'Allow access to the designated counting channel.');
                 console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
             }
         })

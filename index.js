@@ -78,9 +78,11 @@ client.on('messageDelete', message => {
 
 // This handles message edits
 client.on('messageUpdate', (oldMessage, newMessage) => {
-    handleMessageUpdate(oldMessage, newMessage).catch(err => {
-        console.warn(err);
-    });
+    try {
+        handleMessageUpdate(oldMessage, newMessage);
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 function handleMessage(message) {

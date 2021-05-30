@@ -4,6 +4,7 @@ const path = require('path');
 const roman = require('@sguest/roman-js');
 const jsonfile = require('jsonfile');
 const { DateTime } = require('luxon');
+const { Client, Message } = require('discord.js');
 
 // Export most functions for use in index.js
 module.exports = {
@@ -37,7 +38,7 @@ function isValid(value) {
 // State should be true to restrict, or false to unrestrict
 async function restrictUser(client, channelId, userId, state) {
     const channel = await client.channels.fetch(channelId)
-        .catch(console.error);
+        .catch(error => console.error(error));
 
     // const guild = client.guilds.resolve(channel);
     const guild = channel.guild;
@@ -45,7 +46,7 @@ async function restrictUser(client, channelId, userId, state) {
     guild.members.fetch(userId)
         .then(member => {
             if (state) {
-                channel.overwritePermissions([{ id: member.user, deny: ['SEND_MESSAGES'] }], 'Restrict access to the designated counting channel.');
+                channel.overwritePermissions([{ id: member.user, deny: ['SEND_MESSAGES'] }], 'Forbid access to the designated counting channel.');
                 console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
             } else {
             // TODO: Make this delete permissionOverwrites for a user instead
@@ -53,7 +54,7 @@ async function restrictUser(client, channelId, userId, state) {
                 console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
             }
         })
-        .catch(console.error);
+        .catch(error => console.error(error));
 }
 
 // This function unbans anyone who should be unbanned according to their unbanDate
@@ -93,9 +94,15 @@ function convertToBase10(string) {
         return parseInt(string, 16);
     }
     return NaN;
-
 }
 
+/**
+ * @param {Client} client
+ * @param {Message} message
+ * @param {Object} storage
+ * @param {Boolean} rewind
+ * @returns {void}
+ */
 function banishUser(client, message, storage, rewind) {
     // Ignores moderators from being punished by bot as it has no effect anyway
     if (!message.member.hasPermission('MANAGE_ROLES')) {
@@ -145,12 +152,15 @@ function banishUser(client, message, storage, rewind) {
 
 // Fibonacci used for calculating ban times from counting
 function fibonacci(num) {
-    let a = 1, b = 0, temp;
+    let a = 1;
+    let b = 0;
+    let temp;
 
     while (num >= 0) {
         temp = a;
         a += b;
         b = temp;
+        // eslint-disable-next-line no-param-reassign
         num--;
     }
 
@@ -160,8 +170,8 @@ function fibonacci(num) {
 // Shoutout to bit-less at https://stackoverflow.com/a/54137611
 function createDirectories(pathname) {
     const dirname = path.resolve();
-    pathname = pathname.replace(/^\.*\/|\/?[^/]+\.[a-z]+|\/$/g, ''); // Remove leading directory markers, and remove ending /file-name.extension
-    fs.mkdir(path.resolve(dirname, pathname), { recursive: true }, e => {
+    const trimmedPath = pathname.replace(/^\.*\/|\/?[^/]+\.[a-z]+|\/$/g, ''); // Remove leading directory markers, and remove ending /file-name.extension
+    fs.mkdir(path.resolve(dirname, trimmedPath), { recursive: true }, e => {
         if (e) {
             console.error(e);
         } else {

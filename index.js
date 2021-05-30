@@ -155,8 +155,6 @@ async function handleMessageDelete(message) {
     // This is as good as it gets
     const exactMoment = Date.now();
 
-    console.log('Message deletion spotted!');
-
     if (storage.lastMessageId !== message.id || message.channel.id !== storage.channelId) {
         return;
     }
@@ -164,6 +162,8 @@ async function handleMessageDelete(message) {
     if (message.content.startsWith(process.env.PREFIX) || message.author.bot || !storage.counting) {
         return;
     }
+
+    console.log('Message deletion spotted!');
 
     const snowflakeUtil = Discord.SnowflakeUtil;
 
@@ -205,7 +205,7 @@ function handleMessageUpdate(oldMessage, newMessage) {
     const oldCount = oldMessage.content.split(/ +/)[0];
     const newCount = newMessage.content.split(/ +/)[0];
 
-    // Make sure the number is in bounds because I don't want to rely on the equality check below
+    // Make sure the number is in bounds because I don't want to rely on the equality check after this
     if (!isValid(newCount)) {
         return;
     }

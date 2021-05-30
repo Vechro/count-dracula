@@ -9,12 +9,10 @@
     ],
     "plugins": [
         "github",
-        "promise",
-        "json"
+        "promise"
     ],
     "env": {
         "node": true,
-        "browser": true,
         "es2020": true
     },
     "parser": "espree",
@@ -254,7 +252,6 @@
         "no-path-concat": "error",
         "no-plusplus": "off",
         "no-proto": "error",
-        "no-process-env": "error",
         "no-process-exit": "error",
         "no-prototype-builtins": "off",
         "no-redeclare": "off",

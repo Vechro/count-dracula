@@ -1,6 +1,6 @@
-FROM node:13.8.0-buster-slim
+FROM node:14.17.0-buster-slim
 WORKDIR /opt/count-dracula
 COPY package*.json ./
-RUN npm install
+RUN npm i
 COPY . .
 CMD [ "npm", "start" ]

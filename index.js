@@ -1,3 +1,4 @@
+/* eslint-disable no-sync */
 require('dotenv').config();
 
 const fs = require('fs');
@@ -100,16 +101,20 @@ function handleMessage(message) {
 
         storage.lastMessageId = message.id;
 
+        if (storage.lastUserId === message.member.user.id) {
+            banishUser(client, message, storage, true, 'counting multiple times in a row!');
+            return;
+        }
+
         // Last half of this if-clause stops people from counting twice in a row
         if (convertToBase10(countAttempt) === storage.lastNumber + 1 && storage.lastUserId !== message.member.user.id) {
             storage.lastNumber += 1;
             storage.lastUserId = message.member.user.id;
             jsonfile.writeFile(process.env.DATA_PATH, storage);
             return;
-
         }
-        banishUser(client, message, storage, true);
 
+        banishUser(client, message, storage, true, 'invalid number!');
     }
 
     // Return if message starts with prefix
@@ -177,10 +182,10 @@ async function handleMessageDelete(message) {
         // Check if there is exactly 1 log, probably works
         if (logs.entries.length !== 1) {
             // Handle ban, but don't rewind count
-            banishUser(client, message, storage, false);
+            banishUser(client, message, storage, false, 'illegal message deletion!');
         }
     } else {
-        console.log('Ignoring due to high permissions of deleter or channel mismatch');
+        console.log('Ignorin message deletion due to high permissions of deleter or channel mismatch');
     }
 }
 
@@ -212,7 +217,7 @@ function handleMessageUpdate(oldMessage, newMessage) {
 
     // If the numbers in the pre-edit message and the edited message are different, then ban user
     if (convertToBase10(oldCount) !== convertToBase10(newCount)) {
-        banishUser(client, oldMessage, storage, false);
+        banishUser(client, oldMessage, storage, false, 'edited the number of the last message');
     }
 }
 

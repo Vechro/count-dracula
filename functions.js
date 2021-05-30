@@ -4,7 +4,7 @@ const path = require('path');
 const roman = require('@sguest/roman-js');
 const jsonfile = require('jsonfile');
 const { DateTime } = require('luxon');
-const { Client, Message } = require('discord.js');
+const { Client, Message, Channel } = require('discord.js');
 
 // Export most functions for use in index.js
 module.exports = {
@@ -17,25 +17,42 @@ module.exports = {
     isValid
 };
 
+/**
+ * @param {Number} min
+ * @param {Number} max
+ * @returns {Number} Random value within the provided range
+ */
 function getRandom(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-// Unused but useful
-// Gets channel from channel id
-/*
-function getChannel(client, guildId, channelId) {
+/**
+ * @param {Client} client
+ * @param {String} guildId
+ * @param {String} channelId
+ * @returns {Channel}
+ */
+function resolveChannel(client, guildId, channelId) {
     const guild = client.guilds.get(guildId);
     return guild.channels.get(channelId);
 }
-*/
 
-// Checks if an int is within safe bounds
+/**
+ * Checks if an int is within safe bounds
+ * @param {Number} value Number to validate
+ * @returns {Boolean}
+ */
 function isValid(value) {
     return value < Number.MAX_SAFE_INTEGER && value > Number.MIN_SAFE_INTEGER;
 }
 
-// State should be true to restrict, or false to unrestrict
+/**
+ *
+ * @param {Client} client
+ * @param {String} channelId
+ * @param {String} userId
+ * @param {Boolean} state true to restrict, or false to unrestrict user
+ */
 async function restrictUser(client, channelId, userId, state) {
     const channel = await client.channels.fetch(channelId)
         .catch(error => console.error(error));
@@ -49,7 +66,7 @@ async function restrictUser(client, channelId, userId, state) {
                 channel.overwritePermissions([{ id: member.user, deny: ['SEND_MESSAGES'] }], 'Forbid access to the designated counting channel.');
                 console.log(`${member.user.tag} (${userId}) restricted from accessing channel`);
             } else {
-            // TODO: Make this delete permissionOverwrites for a user instead
+                // TODO: Make this delete permissionOverwrites for a user instead
                 channel.overwritePermissions([{ id: member.user, allow: ['SEND_MESSAGES'] }], 'Allow access to the designated counting channel.');
                 console.log(`${member.user.tag} (${userId}) unrestricted from accessing channel`);
             }
@@ -101,9 +118,10 @@ function convertToBase10(string) {
  * @param {Message} message
  * @param {Object} storage
  * @param {Boolean} rewind
+ * @param {String} reason The message sent as the reason behind the ban.
  * @returns {void}
  */
-function banishUser(client, message, storage, rewind) {
+function banishUser(client, message, storage, rewind, reason) {
     // Ignores moderators from being punished by bot as it has no effect anyway
     if (!message.member.hasPermission('MANAGE_ROLES')) {
         if (storage.users.has(message.member.user.id)) {
@@ -130,7 +148,7 @@ function banishUser(client, message, storage, rewind) {
     if (!rewind) {
         storage.lastUserId = 0;
         jsonfile.writeFile(process.env.DATA_PATH, storage);
-        message.channel.send(`${message.member} messed up!`);
+        message.channel.send(`${message.member} broke the rules: ${reason}`);
         message.channel.send(storage.lastNumber);
         return;
     }
@@ -144,7 +162,7 @@ function banishUser(client, message, storage, rewind) {
         proposedNumber = storage.lastNumber - randomInt;
     }
 
-    message.channel.send(`${message.member} messed up!`);
+    message.channel.send(`${message.member} broke the rules: ${reason}`);
     storage.lastNumber = Math.floor(proposedNumber);
     message.channel.send(storage.lastNumber);
     jsonfile.writeFile(process.env.DATA_PATH, storage);
@@ -169,9 +187,8 @@ function fibonacci(num) {
 
 // Shoutout to bit-less at https://stackoverflow.com/a/54137611
 function createDirectories(pathname) {
-    const dirname = path.resolve();
     const trimmedPath = pathname.replace(/^\.*\/|\/?[^/]+\.[a-z]+|\/$/g, ''); // Remove leading directory markers, and remove ending /file-name.extension
-    fs.mkdir(path.resolve(dirname, trimmedPath), { recursive: true }, e => {
+    fs.mkdir(path.resolve(__dirname, trimmedPath), { recursive: true }, e => {
         if (e) {
             console.error(e);
         } else {
